@@ -1,0 +1,80 @@
+name: "Deploying a CI/CD for Windows Service using GitHub Actions"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+      runs-on: windows-latest
+      defaults:
+        run:
+          shell: cmd
+
+      steps:
+      - name: Checkout code repository
+        uses: actions/checkout@v3
+      
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.5
+
+      - name: Restore Packages
+        run: nuget restore WindowsServiceDemo.sln
+
+      - name: Build solution
+        run: msbuild WindowsServiceDemo.sln /p:Configuration=Release /p:DeployOnBuild=true
+
+      # - name: Set AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: ${{ secrets.AWS_REGION }}
+        
+      # - name: Uploading the application artifacts to Amazon S3
+      #   shell: cmd
+      #   run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp "D:\a\HelloWorldSampleApp\HelloWorldSampleApp\HelloWorldSampleApp\obj\Release\Package\HelloWorldSampleApp.zip" s3://dotnet-cicd-bucket/
+
+  # deploy:
+  #   needs: build
+  #   runs-on: [ self-hosted, Windows, X64 ]
+  #   defaults:
+  #     run:
+  #       shell: cmd
+    
+  #   steps:
+  #   - name: Set AWS credentials
+  #     uses: aws-actions/configure-aws-credentials@v1
+  #     with:
+  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       aws-region: ${{ secrets.AWS_REGION }}
+
+  #   - name: Download the zip file from S3 to EC2 folder
+  #     shell: cmd
+  #     run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/HelloWorldSampleApp.zip "C:\actions-runner\_work"
+
+  #   - name: Unzipping the Zip file
+  #     shell: powershell
+  #     run: |
+  #       Expand-Archive -Path "C:\actions-runner\_work\*.zip" -DestinationPath "C:\actions-runner\_work\output"
+        
+  #   - name: Deploy to IIS Server
+  #     shell: powershell
+  #     run: |
+  #       Start-Process powershell -ArgumentList "iisreset /stop" -Verb RunAs
+  #       Copy-Item -Path "C:\actions-runner\_work\output\Content\D_C\a\HelloWorldSampleApp\HelloWorldSampleApp\HelloWorldSampleApp\obj\Release\Package\PackageTmp\*" -Destination "C:\inetpub\wwwroot" -Recurse -Force
+  #       Start-Process powershell -ArgumentList "iisreset /start" -Verb RunAs
+
+  #   - name: Delete the unzipped folder to allow new builds gracefully
+  #     shell: powershell
+  #     run: Remove-Item 'C:\actions-runner\_work\output' -Recurse
+      
+    
