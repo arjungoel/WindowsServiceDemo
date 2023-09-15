@@ -35,6 +35,9 @@ jobs:
         shell: powershell
         run: Start-Process powershell -ArgumentList 'New-Service -Name "WinServDemo" -BinaryPathName "D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe"' -Verb RunAs
 
+      - name: Start a service using Poweshell
+        shell: powershell
+        run: Start-Process powershell -ArgumentList 'Start-Service -Name "WinServDemo"' -Verb RunAs
       # - name: Set AWS credentials
       #   uses: aws-actions/configure-aws-credentials@v1
       #   with:
