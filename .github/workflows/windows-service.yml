@@ -38,6 +38,11 @@ jobs:
       - name: Start a service using Poweshell
         shell: powershell
         run: Start-Process powershell -ArgumentList 'Start-Service -Name "WinServDemo"' -Verb RunAs
+
+      - name: Display the service status
+        shell: powershell
+        run: Start-Process powershell Get-Service -Verb RunAs
+        
       # - name: Set AWS credentials
       #   uses: aws-actions/configure-aws-credentials@v1
       #   with:
