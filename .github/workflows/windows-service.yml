@@ -31,6 +31,10 @@ jobs:
       - name: Build solution
         run: msbuild WindowsServiceDemo.sln /p:Configuration=Release /p:DeployOnBuild=true
 
+      - name: Install a service using Powershell
+        shell: powershell
+        run: Start-Process powershell -ArgumentList 'New-Service -Name "WinServDemo" -BinaryPathName "D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe"' -Verb RunAs
+
       # - name: Set AWS credentials
       #   uses: aws-actions/configure-aws-credentials@v1
       #   with:
