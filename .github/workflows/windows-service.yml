@@ -49,7 +49,7 @@ jobs:
          
      - name: Install a service using Powershell
        shell: powershell
-       run: Start-Process powershell InstallUtil.exe "D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe" -Verb RunAs
+       run: Start-Process powershell -FilePath "InstallUtil.exe" -ArgumentList "D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe" -Verb RunAs
 
      # - name: Start a service using Poweshell
      #   shell: powershell
