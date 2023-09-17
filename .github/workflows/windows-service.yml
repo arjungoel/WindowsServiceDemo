@@ -31,32 +31,17 @@ jobs:
       - name: Build solution
         run: msbuild WindowsServiceDemo.sln /p:Configuration=Release /p:DeployOnBuild=true
 
-        
-      # - name: Set AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: ${{ secrets.AWS_REGION }}
-        
-      # - name: Uploading the application artifacts to Amazon S3
-      #   shell: cmd
-      #   run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp "D:\a\HelloWorldSampleApp\HelloWorldSampleApp\HelloWorldSampleApp\obj\Release\Package\HelloWorldSampleApp.zip" s3://dotnet-cicd-bucket/
-
-  # deploy:
-  #   needs: build
-  #   runs-on: [ self-hosted, Windows, X64 ]
-  #   defaults:
-  #     run:
-  #       shell: cmd
+  deploy:
+    needs: build
+    runs-on: [ self-hosted, Windows, X64 ]
+    defaults:
+      run:
+        shell: cmd
     
-  #   steps:
-  #   - name: Set AWS credentials
-  #     uses: aws-actions/configure-aws-credentials@v1
-  #     with:
-  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #       aws-region: ${{ secrets.AWS_REGION }}
+    steps:
+     - name: Install a service using Powershell
+       shell: powershell
+       run: Start-Process powershell -ArgumentList 'New-Service -Name "WinServDemo" -BinaryPathName "D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe"' -Verb RunAs
 
   #   - name: Download the zip file from S3 to EC2 folder
   #     shell: cmd
