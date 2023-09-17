@@ -51,24 +51,10 @@ jobs:
        shell: powershell
        run: Start-Process powershell -ArgumentList 'New-Service -Name "WinServDemo" -BinaryPathName "D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe"' -Verb RunAs
 
-  #   - name: Download the zip file from S3 to EC2 folder
-  #     shell: cmd
-  #     run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/HelloWorldSampleApp.zip "C:\actions-runner\_work"
+     - name: Start a service using Poweshell
+       shell: powershell
+       run: Start-Process powershell -ArgumentList 'Start-Service -Name "WinServDemo"' -Verb RunAs
 
-  #   - name: Unzipping the Zip file
-  #     shell: powershell
-  #     run: |
-  #       Expand-Archive -Path "C:\actions-runner\_work\*.zip" -DestinationPath "C:\actions-runner\_work\output"
-        
-  #   - name: Deploy to IIS Server
-  #     shell: powershell
-  #     run: |
-  #       Start-Process powershell -ArgumentList "iisreset /stop" -Verb RunAs
-  #       Copy-Item -Path "C:\actions-runner\_work\output\Content\D_C\a\HelloWorldSampleApp\HelloWorldSampleApp\HelloWorldSampleApp\obj\Release\Package\PackageTmp\*" -Destination "C:\inetpub\wwwroot" -Recurse -Force
-  #       Start-Process powershell -ArgumentList "iisreset /start" -Verb RunAs
-
-  #   - name: Delete the unzipped folder to allow new builds gracefully
-  #     shell: powershell
-  #     run: Remove-Item 'C:\actions-runner\_work\output' -Recurse
-      
-    
+     - name: Display the service status
+       shell: powershell
+       run: Start-Process powershell ArgumentList 'Get-Service -Name "WinServDemo"' -Verb RunAs
