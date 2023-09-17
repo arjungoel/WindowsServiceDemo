@@ -65,9 +65,9 @@ jobs:
         shell: powershell
         run: Start-Process powershell -ArgumentList 'New-Service -Name "WindowsServiceDemo" -BinaryPathName "C:\actions-runner\_work\WindowsServiceDemo.exe" -DisplayName "WinServDemo"' -Verb RunAs
      
-     # - name: Start a service using Poweshell
-     #   shell: powershell
-     #   run: Start-Process powershell -ArgumentList 'Start-Service -Name "WinServDemo"' -Verb RunAs
+      - name: Start a service using Poweshell
+        shell: powershell
+        run: Start-Process powershell -ArgumentList 'Start-Service -Name "WindowsServiceDemo"' -Verb RunAs
 
      # - name: Display the service status
      #   shell: powershell
