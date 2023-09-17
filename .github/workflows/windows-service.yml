@@ -57,4 +57,4 @@ jobs:
 
      - name: Display the service status
        shell: powershell
-       run: Start-Process powershell ArgumentList 'Get-Service -Name "WinServDemo"' -Verb RunAs
+       run: Start-Process powershell Get-Service -Verb RunAs
