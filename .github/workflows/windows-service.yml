@@ -49,12 +49,12 @@ jobs:
          
      - name: Install a service using Powershell
        shell: powershell
-       run: Start-Process powershell -ArgumentList 'New-Service -Name "WinServDemo" -BinaryPathName "D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe"' -Verb RunAs
+       run: Start-Process powershell InstallUtil.exe "D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe"' -Verb RunAs
 
-     - name: Start a service using Poweshell
-       shell: powershell
-       run: Start-Process powershell -ArgumentList 'Start-Service -Name "WinServDemo"' -Verb RunAs
+     # - name: Start a service using Poweshell
+     #   shell: powershell
+     #   run: Start-Process powershell -ArgumentList 'Start-Service -Name "WinServDemo"' -Verb RunAs
 
-     - name: Display the service status
-       shell: powershell
-       run: Start-Process powershell Get-Service -Verb RunAs
+     # - name: Display the service status
+     #   shell: powershell
+     #   run: Start-Process powershell Get-Service -Verb RunAs
