@@ -8,31 +8,31 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
+  # build:
 
-      runs-on: windows-latest
-      defaults:
-        run:
-          shell: cmd
+  #     runs-on: windows-latest
+  #     defaults:
+  #       run:
+  #         shell: cmd
 
-      steps:
-      - name: Checkout code repository
-        uses: actions/checkout@v3
+  #     steps:
+  #     - name: Checkout code repository
+  #       uses: actions/checkout@v3
       
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1
+  #     - name: Setup MSBuild
+  #       uses: microsoft/setup-msbuild@v1
 
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1.0.5
+  #     - name: Setup NuGet
+  #       uses: NuGet/setup-nuget@v1.0.5
 
-      - name: Restore Packages
-        run: nuget restore WindowsServiceDemo.sln
+  #     - name: Restore Packages
+  #       run: nuget restore WindowsServiceDemo.sln
 
-      - name: Build solution
-        run: msbuild WindowsServiceDemo.sln /p:Configuration=Release /p:DeployOnBuild=true
+  #     - name: Build solution
+  #       run: msbuild WindowsServiceDemo.sln /p:Configuration=Release /p:DeployOnBuild=true
 
   deploy:
-    needs: build
+    # needs: build
     runs-on: [ self-hosted, Windows, X64 ]
     defaults:
       run:
@@ -49,7 +49,7 @@ jobs:
          
      - name: Install a service using Powershell
        shell: powershell
-       run: Start-Process powershell InstallUtil.exe "D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe"' -Verb RunAs
+       run: Start-Process powershell InstallUtil.exe "D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe" -Verb RunAs
 
      # - name: Start a service using Poweshell
      #   shell: powershell
