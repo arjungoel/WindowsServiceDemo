@@ -49,8 +49,8 @@ jobs:
          
      - name: Install a service using Powershell
        shell: powershell
-       run: Start-Process -FilePath "InstallUtil.exe" -ArgumentList "D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe" -Verb RunAs
-
+       run: Start-Process -FilePath "C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe" -ArgumentList "D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe" -Verb RunAs
+     
      # - name: Start a service using Poweshell
      #   shell: powershell
      #   run: Start-Process powershell -ArgumentList 'Start-Service -Name "WinServDemo"' -Verb RunAs
