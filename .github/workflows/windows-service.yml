@@ -39,7 +39,10 @@ jobs:
              aws-region: ${{ secrets.AWS_REGION }}
 
          - name: Upload the files from bin folder to S3 bucket
-           run: aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\* s3://dotnet-cicd-bucket/
+           run: |
+             aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe.config s3://dotnet-cicd-bucket/
+             aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe s3://dotnet-cicd-bucket/
+             aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.pdb s3://dotnet-cicd-bucket/
 
   # deploy:
   #    needs: build
