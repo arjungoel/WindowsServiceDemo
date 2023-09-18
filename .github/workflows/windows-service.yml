@@ -61,10 +61,10 @@ jobs:
         shell: powershell
         run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "C:\actions-runner\_work"
          
-      - name: Install a service using powershell
+      - name: Install a service using command prompt
         shell: cmd
         run: |
-          C:\Windows\System32 & "C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe" "C:\actions-runner\work\WindowsServiceDemo.exe"
+          cd C:\Windows\System32 & "C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe" "C:\actions-runner\work\WindowsServiceDemo.exe"
           
 
      # - name: Display the service status
