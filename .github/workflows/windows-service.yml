@@ -70,7 +70,7 @@ jobs:
           
       - name: Install Windows Service
         shell: cmd
-        run: dir
+        run: C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo.exe"
 
           
           
