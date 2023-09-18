@@ -62,12 +62,16 @@ jobs:
         run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "C:\actions-runner\_work"
          
       - name: Install a service using Powershell
-        shell: cmd
+        shell: powershell
         run: |
           Start-Process cmd.exe -Verb RunAs
           Set-Location C:\Windows\System32
           Set-Location C:\Windows\Microsoft.NET\Framework\v4.0.30319
           pwd
+      - name: Test
+        shell: cmd
+        run: start /b "" "C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe" "C:\actions-runner\_work\WindowsServiceDemo.exe"
+
       # - name: Start a service using Poweshell
       #   shell: powershell
       #   run: Start-Process powershell -ArgumentList 'Start-Service -Name "WindowsServiceDemo"' -Verb RunAs
