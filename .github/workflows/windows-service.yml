@@ -62,14 +62,11 @@ jobs:
         run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "C:\actions-runner\_work"
          
       - name: Install a service using Command Prompt
-        shell: C:\Windows\system32\cmd.EXE /D /E:ON /V:OFF /S /C "CALL "{0}""
+        shell: cmd
         run: |
           cd C:\Windows\System32
           cd C:\Windows\Microsoft.NET\Framework\v4.0.30319
           cd
-          # InstallUtil.exe C:\actions-runner\_work\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo.exe
-
-          
           
       #     Start-Process cmd.exe -Verb RunAs
       #     Set-Location C:\Windows\System32
