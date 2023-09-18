@@ -67,10 +67,7 @@ jobs:
           cd C:\Windows\System32
           cd C:\Windows\Microsoft.NET\Framework\v4.0.30319
           cd
-          
-      - name: Install Windows Service
-        shell: cmd
-        run: C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe C:\actions-runner\_work\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo.exe
+          C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe C:\actions-runner\_work\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo.exe
 
           
           
