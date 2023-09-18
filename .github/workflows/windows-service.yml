@@ -69,7 +69,7 @@ jobs:
           cd
           
       - name: Install Windows Service
-        shell: powershell
+        shell: cmd
         run: |
           $servicePath = 'C:\actions-runner\_work\WindowsServiceDemo.exe'
           Start-Process -FilePath "cmd.exe" -ArgumentList "/c InstallUtil.exe $servicePath" -Verb RunAs
