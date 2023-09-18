@@ -65,6 +65,7 @@ jobs:
         shell: powershell
         run: |
           Start-Process cmd.exe -Verb RunAs
+          Set-Location C:\Windows\System32
           pwd
               
       # - name: Start a service using Poweshell
