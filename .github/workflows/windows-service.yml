@@ -66,7 +66,7 @@ jobs:
         run: |
           cd C:\Windows\System32
           cd C:\Windows\Microsoft.NET\Framework\v4.0.30319
-          InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
+          Start-Process -FilePath "InstallUtil.exe" -ArgumentList "C:\actions-runner\_work\WindowsServiceDemo.exe" -Wait
         
       # - name: Start a service using Poweshell
       #   shell: powershell
