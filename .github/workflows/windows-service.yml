@@ -66,6 +66,7 @@ jobs:
         run: |
           Start-Process cmd.exe -Verb RunAs
           Set-Location C:\Windows\System32
+          Set-Location C:\Windows\Microsoft.NET\Framework\v4.0.30319
           pwd
               
       # - name: Start a service using Poweshell
