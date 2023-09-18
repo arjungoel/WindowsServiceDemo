@@ -65,6 +65,7 @@ jobs:
         shell: cmd
         run: |
           cd C:\Windows\System32
+          cd C:\Windows\Microsoft.NET\Framework\v4.0.30319
           cd
           
       #     Start-Process cmd.exe -Verb RunAs
