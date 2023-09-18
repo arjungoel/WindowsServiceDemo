@@ -44,25 +44,28 @@ jobs:
              aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe s3://dotnet-cicd-bucket/
              aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.pdb s3://dotnet-cicd-bucket/
 
-  # deploy:
-  #    needs: build
-  #    runs-on: [ self-hosted, Windows, X64 ]
-  #    defaults:
-  #      run:
-  #        shell: cmd
+  deploy:
+      needs: build
+      runs-on: [ self-hosted, Windows, X64 ]
+      defaults:
+        run:
+          shell: cmd
     
-  #    steps:
+      steps:
     
-  #     - name: Set AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: ${{ secrets.AWS_REGION }}
+       - name: Set AWS credentials
+         uses: aws-actions/configure-aws-credentials@v1
+         with:
+           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+           aws-region: ${{ secrets.AWS_REGION }}
 
-  #     - name: Download the zip file from S3 to EC2 folder
-  #       shell: powershell
-  #       run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "C:\actions-runner\_work"
+       - name: Download the zip file from S3 to EC2 folder
+         shell: powershell
+         run: |
+           C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "C:\actions-runner\_work"
+           C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe.config "C:\actions-runner\_work"
+           C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.pdb "C:\actions-runner\_work"
          
   #     - name: Install a service using command prompt
   #       shell: cmd
