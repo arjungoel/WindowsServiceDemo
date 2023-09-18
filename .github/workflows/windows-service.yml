@@ -64,9 +64,8 @@ jobs:
       - name: Install a service using Powershell
         shell: powershell
         run: |
-          Set-Location C:\Windows\System32
-          Set-Location C:\Windows\Microsoft.NET\Framework\v4.0.30319
-          & "C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe" "C:\actions-runner\_work\WindowsServiceDemo.exe"
+          Start-Process cmd.exe -Verb RunAs
+          pwd
               
       # - name: Start a service using Poweshell
       #   shell: powershell
