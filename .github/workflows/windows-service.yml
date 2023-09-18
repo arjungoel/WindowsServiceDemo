@@ -65,7 +65,7 @@ jobs:
         shell: cmd
         run: |
           cd C:\Windows\System32
-          pwd
+          cd
           
       #     Start-Process cmd.exe -Verb RunAs
       #     Set-Location C:\Windows\System32
