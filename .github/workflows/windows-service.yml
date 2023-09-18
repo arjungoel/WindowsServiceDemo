@@ -67,7 +67,7 @@ jobs:
           Start-Process cmd.exe -Verb RunAs
           Set-Location C:\Windows\System32
           Set-Location C:\Windows\Microsoft.NET\Framework\v4.0.30319
-          Start-Process powershell -ArgumentList 'InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"' -Verb RunAs
+          pwd
       # - name: Start a service using Poweshell
       #   shell: powershell
       #   run: Start-Process powershell -ArgumentList 'Start-Service -Name "WindowsServiceDemo"' -Verb RunAs
