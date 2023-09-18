@@ -35,7 +35,9 @@ jobs:
            shell: cmd
            run: |
             cd C:\Windows\System32 & "C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe" "D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe"
-
+            sc start "Service1"
+            sc query "Service1"
+            
          # - name: Set AWS credentials
          #   uses: aws-actions/configure-aws-credentials@v1
          #   with:
@@ -70,6 +72,7 @@ jobs:
   #       shell: cmd
   #       run: |
   #         cd C:\Windows\System32 & "C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe" "C:\actions-runner\work\WindowsServiceDemo.exe"
+  
           
 
   #    # - name: Display the service status
