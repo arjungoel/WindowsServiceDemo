@@ -60,7 +60,7 @@ jobs:
             
         - name: Test service existence
           shell: powershell
-          run: Start-Process powershell Get-Service -Name "Service1" -ErrorAction SilentlyContinue -Verb RunAs
+          run: Start-Process powershell Get-Service "Service*" | Sort-Object status -ErrorAction SilentlyContinue -Verb RunAs
             
         # - name: Download the zip file from S3 to EC2 folder
         #   shell: powershell
