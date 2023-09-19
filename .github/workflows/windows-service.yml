@@ -85,7 +85,7 @@ jobs:
            Set-Location -Path "C:\Windows\Microsoft.NET\Framework\v4.0.30319\"
 
        - name: Run InstallUtil.exe
-         shell: powershell
+         shell: cmd
          run: |
            .\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
 
