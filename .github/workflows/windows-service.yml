@@ -63,14 +63,14 @@ jobs:
        - name: Download the zip file from S3 to EC2 folder
          shell: powershell
          run: |
-           C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "C:\actions-runner\_work"
-           C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe.config "C:\actions-runner\_work"
-           C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.pdb "C:\actions-runner\_work"
+           C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "C:\Windows\Microsoft.NET\Framework\v4.0.30319"
+           # C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe.config "C:\actions-runner\_work"
+           # C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.pdb "C:\actions-runner\_work"
          
        - name: Install a service using command prompt
          shell: cmd
          run: |
-           cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\work\WindowsServiceDemo.exe"
+           cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\Windows\Microsoft.NET\Framework\v4.0.30319\WindowsServiceDemo.exe"
   
           
 
