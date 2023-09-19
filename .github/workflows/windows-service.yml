@@ -8,42 +8,42 @@ on:
     branches: [ "master" ]
 
 jobs:
-   # build:
+    build:
 
-   #        runs-on: windows-latest
-   #        defaults:
-   #          run:
-   #            shell: cmd
+           runs-on: windows-latest
+           defaults:
+             run:
+               shell: cmd
 
-   #        steps:
-   #        - name: Checkout code repository
-   #          uses: actions/checkout@v3
+           steps:
+           - name: Checkout code repository
+             uses: actions/checkout@v3
       
-   #        - name: Setup MSBuild
-   #          uses: microsoft/setup-msbuild@v1
+           - name: Setup MSBuild
+             uses: microsoft/setup-msbuild@v1
 
-   #        - name: Setup NuGet
-   #          uses: NuGet/setup-nuget@v1.0.5
+           - name: Setup NuGet
+             uses: NuGet/setup-nuget@v1.0.5
 
-   #        - name: Restore Packages
-   #          run: nuget restore WindowsServiceDemo.sln
+           - name: Restore Packages
+             run: nuget restore WindowsServiceDemo.sln
 
-   #        - name: Build solution
-   #          run: msbuild WindowsServiceDemo.sln /p:Configuration=Release /p:DeployOnBuild=true
+           - name: Build solution
+             run: msbuild WindowsServiceDemo.sln /p:Configuration=Release /p:DeployOnBuild=true
             
-   #        - name: Set AWS credentials
-   #          uses: aws-actions/configure-aws-credentials@v1
-   #          with:
-   #            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-   #            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-   #            aws-region: ${{ secrets.AWS_REGION }}
+           - name: Set AWS credentials
+             uses: aws-actions/configure-aws-credentials@v1
+             with:
+               aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+               aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+               aws-region: ${{ secrets.AWS_REGION }}
 
-   #        - name: Upload the files from bin folder to S3 bucket
-   #          run: |
-   #            aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe s3://dotnet-cicd-bucket/
+           - name: Upload the files from bin folder to S3 bucket
+             run: |
+               aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe s3://dotnet-cicd-bucket/
 
-   deploy:
-      # needs: build
+    deploy:
+      needs: build
       runs-on: [ self-hosted, Windows, X64 ]
       defaults:
         run:
@@ -51,36 +51,51 @@ jobs:
     
       steps:
     
-       # - name: Set AWS credentials
-       #   uses: aws-actions/configure-aws-credentials@v1
-       #   with:
-       #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-       #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-       #     aws-region: ${{ secrets.AWS_REGION }}
+        - name: Set AWS credentials
+          uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ secrets.AWS_REGION }}
 
-       # - name: Download the zip file from S3 to EC2 folder
-       #   shell: powershell
-       #   run: |
-       #     C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "C:\actions-runner\_work"
+        - name: Download the zip file from S3 to EC2 folder
+          shell: powershell
+          run: |
+            C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "C:\actions-runner\_work"
 
-    
-       # - name: Run Command Prompt as Administrator and change directory to .NET Framework
-       #   shell: cmd
-       #   run: |
-       #     cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
+
+        - name: Check if service is already installed
+          id: check_service_installed
+          run: |
+            sc query "Service1" | findstr "STATE" > nul
+            if %errorlevel% equ 0 (
+              echo "SERVICE_ALREADY_INSTALLED=true" >> $GITHUB_ENV
+            ) else (
+              echo "SERVICE_ALREADY_INSTALLED=false" >> $GITHUB_ENV
+            )
+
+        - name: Install Service (conditionally)
+          if: env.SERVICE_ALREADY_INSTALLED != 'true'
+          run: |
+            cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
+
+        # - name: Run Command Prompt as Administrator and change directory to .NET Framework
+        #   shell: cmd
+        #   run: |
+        #     cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
            
-      # - name: Start the service
-      #   shell: cmd
-      #   run: |
-      #     cd C:\Windows\System32 && sc start "Service1"
+        - name: Start the service
+          shell: cmd
+          run: |
+            cd C:\Windows\System32 && sc start "Service1"
           
-      - name: Check service status
-        shell: cmd
-        run: |
-          cd C:\Windows\System32 && sc query "Service1"
+        - name: Check service status
+          shell: cmd
+          run: |
+            cd C:\Windows\System32 && sc query "Service1"
 
-      - name: Stop the service
-        shell: cmd
-        run: |
-          cd C:\Windows\System32 && sc stop "Service1"
+        # - name: Stop the service
+        #   shell: cmd
+        #   run: |
+        #     cd C:\Windows\System32 && sc stop "Service1"
           
