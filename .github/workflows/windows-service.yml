@@ -70,9 +70,10 @@ jobs:
        - name: Install a service using command prompt
          shell: cmd
          run: |
-           cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319
+           cd C:\Windows\System32
+           cd C:\Windows\Microsoft.NET\Framework\v4.0.30319
            cd
-           # InstallUtil.exe "C:\Windows\Microsoft.NET\Framework\v4.0.30319\WindowsServiceDemo.exe"
+          
   
           
 
