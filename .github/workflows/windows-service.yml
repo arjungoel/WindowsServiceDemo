@@ -64,19 +64,21 @@ jobs:
         #     C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "C:\actions-runner\_work"
 
 
-        # - name: Check if service is already installed
-        #   shell: powershell
-        #   run: |
+        - name: To check service existence 
+          shell: cmd
+          run: |
+            cd C:\Windows\System32 && sc query "Service1"
             
-        - name: Run Command Prompt as Administrator and change directory to .NET Framework
-          shell: cmd
-          run: |
-            cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
+       
+        # - name: Run Command Prompt as Administrator and change directory to .NET Framework
+        #   shell: cmd
+        #   run: |
+        #     cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
            
-        - name: Start the service
-          shell: cmd
-          run: |
-            cd C:\Windows\System32 && sc start "Service1"
+        # - name: Start the service
+        #   shell: cmd
+        #   run: |
+        #     cd C:\Windows\System32 && sc start "Service1"
           
         - name: Check service status
           shell: cmd
