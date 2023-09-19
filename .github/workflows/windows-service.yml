@@ -75,6 +75,7 @@ jobs:
            pwd
     
        - name: Run InstallUtil
+         shell: powershell
          run: |
            Start-Process InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe" -Verb RunAs
          continue-on-error: true
