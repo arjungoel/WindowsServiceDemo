@@ -66,8 +66,9 @@ jobs:
 
         - name: Check if service is already installed
           id: check_service_installed
+          shell: cmd
           run: |
-            sc query "Service1" | findstr "STATE" > nul
+            cd C:\Windows\System32 && sc query "Service1" | findstr "STATE" > nul
             if %errorlevel% equ 0 (
               echo "SERVICE_ALREADY_INSTALLED=true" >> $GITHUB_ENV
             ) else (
@@ -76,6 +77,7 @@ jobs:
 
         - name: Install Service (conditionally)
           if: env.SERVICE_ALREADY_INSTALLED != 'true'
+          shell: cmd
           run: |
             cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
 
