@@ -69,7 +69,12 @@ jobs:
        #   run: |
        #     cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
            
-      - name: Start the service
+      # - name: Start the service
+      #   shell: cmd
+      #   run: |
+      #     cd C:\Windows\System32 && sc start "Service1"
+          
+      - name: Check service status
         shell: cmd
         run: |
-          cd C:\Windows\System32 && sc start "Service1"
+          cd C:\Windows\System32 && sc query "Service1"
