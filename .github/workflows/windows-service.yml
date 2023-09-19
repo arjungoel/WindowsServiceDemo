@@ -60,7 +60,7 @@ jobs:
             
         - name: Test service existence
           shell: powershell
-          run: Start-Process powershell Get-Service -Displayname "WinServDemo" -Verb RunAs
+          run: Start-Process powershell -ArgumentList 'Get-Service -Displayname "WinServDemo"' -Verb RunAs
             
         # - name: Download the zip file from S3 to EC2 folder
         #   shell: powershell
