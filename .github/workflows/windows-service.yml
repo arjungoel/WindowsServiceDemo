@@ -78,3 +78,9 @@ jobs:
         shell: cmd
         run: |
           cd C:\Windows\System32 && sc query "Service1"
+
+      - name: Stop the service
+        shell: cmd
+        run: |
+          cd C:\Windows\System32 && sc stop "Service1"
+          
