@@ -60,10 +60,10 @@ jobs:
            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
            aws-region: ${{ secrets.AWS_REGION }}
 
-       - name: Download the zip file from S3 to EC2 folder
-         shell: powershell
-         run: |
-           C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "C:\actions-runner\_work"
+       # - name: Download the zip file from S3 to EC2 folder
+       #   shell: powershell
+       #   run: |
+       #     C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "C:\actions-runner\_work"
            # C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe.config "C:\actions-runner\_work"
            # C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.pdb "C:\actions-runner\_work"
          
