@@ -71,7 +71,7 @@ jobs:
          shell: cmd
          run: |
            cd C:\Windows\System32
-           cd C:\Windows\Microsoft.NET\Framework\v4.0.30319\"
+           cd C:\Windows\Microsoft.NET\Framework\v4.0.30319\
            C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
 
   #    # - name: Display the service status
