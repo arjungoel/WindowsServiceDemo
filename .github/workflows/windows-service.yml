@@ -58,14 +58,10 @@ jobs:
             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             aws-region: ${{ secrets.AWS_REGION }}
             
-        - name: Test service existence
-          shell: powershell
-          run: Start-Process powershell -ArgumentList 'Get-Service -Displayname "WinServDemo"' -Verb RunAs
-
         - name: To check service existence 
           shell: cmd
           run: |
-            cd C:\Windows\System32 && sc query "Service1"
+            cd C:\Windows\System32 && sc query "Service1" state=all
 
         
        
