@@ -67,7 +67,7 @@ jobs:
         - name: To check service existence 
           shell: cmd
           run: |
-            cd C:\Windows\System32 && sc query "Service1"
+            cd C:\Windows\System32 && sc query "Service1" state= all
             
        
         # - name: Run Command Prompt as Administrator and change directory to .NET Framework
@@ -80,10 +80,10 @@ jobs:
         #   run: |
         #     cd C:\Windows\System32 && sc start "Service1"
           
-        - name: Check service status
-          shell: cmd
-          run: |
-            cd C:\Windows\System32 && sc query "Service1"
+        # - name: Check service status
+        #   shell: cmd
+        #   run: |
+        #     cd C:\Windows\System32 && sc query "Service1"
 
         # - name: Stop the service
         #   shell: cmd
