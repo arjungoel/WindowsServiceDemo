@@ -24,7 +24,7 @@ namespace WindowsServiceDemo
         {
             WriteToFile("Service is started at " + DateTime.Now);
             timer.Elapsed += new ElapsedEventHandler(OnElaspedTime);
-            timer.Interval = 7000;
+            timer.Interval = 5000;
             timer.Enabled = true;
         }
 
