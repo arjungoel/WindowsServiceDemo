@@ -60,7 +60,7 @@ jobs:
 
           - name: Download the zip file from S3 to EC2 folder
             shell: powershell
-            run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe C:\actions-runner\_work
+            run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe C:\actions-runner\_work\tmp
             
           - name: To check if service exists or not
             shell: powershell
