@@ -7,6 +7,11 @@ on:
   pull_request:
     branches: [ "master" ]
 
+env:
+  S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+  EXECUTABLE_PATH_RUNNER: ${{ secrets.EXECUTABLE_PATH_RUNNER }}
+  SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+
 jobs:
 
     build:
@@ -39,8 +44,10 @@ jobs:
 
         - name: Upload the files from bin folder to S3 bucket
           shell: powershell
+          env:
+            EXECUTABLE_PATH: ${{ secrets.EXECUTABLE_PATH }}
           run: |
-            aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe s3://dotnet-cicd-bucket-demo/
+            aws s3 cp ${{ env.EXECUTABLE_PATH }} s3://${{ env.S3_BUCKET_NAME }}/
      
     deploy:
       needs: build
@@ -59,22 +66,24 @@ jobs:
        - name: To check if service exists or not
          shell: powershell
          run: |
-           $service = Get-Service -Name "Service1"
+           $service = Get-Service -Name ${{ env.SERVICE_NAME }}
            if ($service -ne $null) {
              echo "Service exist"
-             Stop-Service -Name "Service1"
+             Stop-Service -Name ${{ env.SERVICE_NAME }}
              cd C:\Windows\System32
-             C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\WindowsServiceDemo.exe"
+             C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u ${{ env.EXECUTABLE_PATH_RUNNER }}
              
            } 
     
        - name: Download the zip file from S3 to EC2 folder
          shell: powershell
-         run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket-demo/WindowsServiceDemo.exe C:\actions-runner\_work
+         env:
+           EC2_LOCATION: ${{ secrets.EC2_LOCATION }}
+         run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/WindowsServiceDemo.exe ${{ env.EC2_LOCATION }}
       
        - name: Install the service
          shell: powershell
          run: |
            cd C:\Windows\System32
-           C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
-           Start-Service -Name "Service1"
+           C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
+           Start-Service -Name ${{ env.SERVICE_NAME }}
