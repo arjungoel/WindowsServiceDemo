@@ -70,15 +70,11 @@ jobs:
             $service = Get-Service -Name Service1 -ErrorAction SilentlyContinue
             if ($service -eq $null) {
               echo "Service doesn't exist"
-              Start-Process cmd.exe -Verb RunAs
-              Set-Location -Path "C:\Windows\Microsoft.NET\Framework\v4.0.30319\"
-              Start-Process C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe" -Verb RunAs
+              cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
             } else {
               echo "Service does exist"
-              Start-Process cmd.exe -Verb RunAs
-              Set-Location -Path "C:\Windows\Microsoft.NET\Framework\v4.0.30319\"
-              Start-Process powershell -ArgumentList 'C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\WindowsServiceDemo.exe"' -Verb RunAs
-              Start-Process powershell -ArgumentList 'C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"' -Verb RunAs
+              cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\WindowsServiceDemo.exe"
+              cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
             }
        
         # - name: Run Command Prompt as Administrator and change directory to .NET Framework
