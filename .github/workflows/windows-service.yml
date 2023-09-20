@@ -60,7 +60,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
           
       - name: Test
-        shell: powershell
+        shell: bash
         run: |
           $output = git rev-parse --short=4 HEAD
           echo $output
