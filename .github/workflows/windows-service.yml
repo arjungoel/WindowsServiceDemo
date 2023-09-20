@@ -62,6 +62,7 @@ jobs:
       - name: Test
         shell: powershell
         run: |
+          C:\"Program Files"\Git\cmd
           $output = git rev-parse --short=4 HEAD
           echo $output
 
