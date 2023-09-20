@@ -62,7 +62,7 @@ jobs:
       - name: Test
         shell: powershell
         run: |
-          $output = $output = Invoke-Expression -Command "& 'C:\Program Files\Git\cmd\git' rev-parse --short=4 HEAD"
+          $output = Invoke-Expression -Command "& 'C:\Program Files\Git\cmd\git' rev-parse --short=4 HEAD"
           echo $output
           
       # - name: Test SHA
