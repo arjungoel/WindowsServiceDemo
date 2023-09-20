@@ -59,11 +59,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
           
-      # - name: Test
-      #   shell: bash
-      #   run: |
-      #     $output = git rev-parse --short=4 HEAD
-      #     echo $output
+      - name: Test
+        shell: powershell
+        run: |
+          $output = git rev-parse --short=4 HEAD
+          echo $output
 
       - name: To check if service exists or not
         shell: powershell
