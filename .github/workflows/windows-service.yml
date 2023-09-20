@@ -81,11 +81,10 @@ jobs:
               C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
             }
 
-        - name: Check service status
+        - name: Check windows service status
           shell: powershell
           run: |
             $serviceName = "Service1"
-            
             # Check the service status
             $service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
             
