@@ -66,12 +66,12 @@ jobs:
             echo "Service exist"
             Stop-Service -Name "Service1"
             cd C:\Windows\System32
-            C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\*WindowsServiceDemo.exe"
+            C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\WindowsServiceDemo.exe"
           } 
     
       - name: Download the zip file from S3 to EC2 folder
         shell: powershell
-        run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/*WindowsServiceDemo.exe C:\actions-runner\_wo
+        run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/*WindowsServiceDemo.exe C:\actions-runner\_work
       
       - name: Install the service
         shell: powershell
