@@ -59,7 +59,7 @@ jobs:
        - name: To check if service exists or not
          shell: powershell
          run: |
-           $service = Get-Service -Name Service1 -ErrorAction SilentlyContinue
+           $service = Get-Service -Name "Service1"
            if ($service -ne $null) {
              echo "Service exist"
              Stop-Service -Name "Service1"
