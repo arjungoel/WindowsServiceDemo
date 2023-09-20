@@ -58,103 +58,25 @@ jobs:
               aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
               aws-region: ${{ secrets.AWS_REGION }}
 
-          - name: Download the zip file from S3 to EC2 folder
-            shell: powershell
-            run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe C:\actions-runner\_work
-            
           - name: To check if service exists or not
             shell: powershell
             run: |
               $service = Get-Service -Name Service1 -ErrorAction SilentlyContinue
-              if ($service -eq $null) {
-                echo "Service doesn't exist"
-                cd C:\Windows\System32
-                C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
-                Start-Service -Name "Service1"
-              } else {
-                echo "Service does exist"
-                
-                # Stop the service...
+              if ($service -ne $null) {
+                echo "Service exist"
                 Stop-Service -Name "Service1"
-
-                # Uninstall the service...
                 cd C:\Windows\System32
                 C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\WindowsServiceDemo.exe"
+              } 
+          
+          - name: Download the zip file from S3 to EC2 folder
+            shell: powershell
+            run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe C:\actions-runner\_work
 
-                # Install the service...
-                cd C:\Windows\System32
-                C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
 
-                # Start the service...
-                Start-Service -Name "Service1"
-              }
-
-         # - name: Check windows service status
-         #   shell: powershell
-         #   run: |
-         #     $serviceName = "Service1"
-         #     # Check the service status
-         #     $service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
-            
-         #     if ($service -eq $null) {
-         #         Write-Host "Service $serviceName not found."
-         #     } elseif ($service.Status -eq 'Running') {
-         #         Write-Host "Service $serviceName is already running."
-         #     } elseif ($service.Status -eq 'Stopped') {
-         #         Write-Host "Service $serviceName is stopped. Starting it..."
-                
-         #         # Start the service
-         #         Start-Service -Name $serviceName
-            
-         #         # Check the service status again
-         #         $service = Get-Service -Name $serviceName
-         #         if ($service.Status -eq 'Running') {
-         #             Write-Host "Service $serviceName has been started successfully."
-         #         } else {
-         #             Write-Host "Failed to start service $serviceName."
-         #         }
-         #     } else {
-         #         Write-Host "Service $serviceName is in an unexpected state: $($service.Status)"
-         #     }
-            
-         # - name: To check if there is any update in application code
-         #   shell: powershell
-         #   run: |
-         #     # Define the service name and the path to the service executable
-         #     $serviceName = "Service1"
-         #     $serviceExecutablePath = "C:\actions-runner\_work\WindowsServiceDemo.exe"
-            
-         #     # Get the current hash of the service executable
-         #     $currentHash = Get-FileHash -Path $serviceExecutablePath -Algorithm SHA256
-            
-         #     # Path to store the previously saved hash (use a writable location)
-         #     $hashFilePath = "C:\actions-runner\_work\PreviousHash.txt"
-            
-         #     # Check if the hash file exists
-         #     if (Test-Path $hashFilePath) {
-         #         # Read the previously saved hash
-         #         $previousHash = Get-Content $hashFilePath
-            
-         #         # Compare the current and previous hashes
-         #         if ($currentHash.Hash -ne $previousHash) {
-         #             # Hashes are different; a code update is detected
-         #             Write-Host "Code update detected. Stopping and restarting the service..."
-            
-         #             # Stop the service
-         #             Stop-Service -Name $serviceName
-            
-         #             # Start the service
-         #             Start-Service -Name $serviceName
-            
-         #             # Save the current hash for future comparisons
-         #             $currentHash.Hash | Set-Content -Path $hashFilePath
-            
-         #             Write-Host "Service restarted."
-         #         } else {
-         #             Write-Host "No code update detected. The service remains unchanged."
-         #         }
-         #     } else {
-         #         # Hash file doesn't exist; assume it's the first run and save the current hash
-         #         $currentHash.Hash | Set-Content -Path $hashFilePath
-         #         Write-Host "Initial hash saved. No code update detected."
-         #     }          
+          - name: Install the service
+            shell: powershell
+            run: |
+              cd C:\Windows\System32
+              C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
+              Start-Service -Name "Service1"
