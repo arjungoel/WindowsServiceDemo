@@ -114,13 +114,13 @@ jobs:
           run: |
             # Define the service name and the path to the service executable
             $serviceName = "Service1"
-            $serviceExecutablePath = "C:\actions_runner\_work\WindowsServiceDemo.exe"
+            $serviceExecutablePath = "C:\actions-runner\_work\WindowsServiceDemo.exe"
             
             # Get the current hash of the service executable
             $currentHash = Get-FileHash -Path $serviceExecutablePath -Algorithm SHA256
             
             # Path to store the previously saved hash (use a writable location)
-            $hashFilePath = "C:\actions_runner\_work\PreviousHash.txt"
+            $hashFilePath = "C:\actions-runner\_work\PreviousHash.txt"
             
             # Check if the hash file exists
             if (Test-Path $hashFilePath) {
@@ -149,26 +149,4 @@ jobs:
                 # Hash file doesn't exist; assume it's the first run and save the current hash
                 $currentHash.Hash | Set-Content -Path $hashFilePath
                 Write-Host "Initial hash saved. No code update detected."
-            }
-
-       
-        # - name: Run Command Prompt as Administrator and change directory to .NET Framework
-        #   shell: cmd
-        #   run: |
-        #     cd C:\Windows\System32 && C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
-           
-        # - name: Start the service
-        #   shell: cmd
-        #   run: |
-        #     cd C:\Windows\System32 && sc start "Service1"
-          
-        # - name: Check service status
-        #   shell: cmd
-        #   run: |
-        #     cd C:\Windows\System32 && sc query "Service1"
-
-        # - name: Stop the service
-        #   shell: cmd
-        #   run: |
-        #     cd C:\Windows\System32 && sc stop "Service1"
-          
+            }          
