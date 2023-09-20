@@ -58,11 +58,29 @@ jobs:
             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             aws-region: ${{ secrets.AWS_REGION }}
             
-        - name: To check service existence 
-          shell: cmd
-          run: |
-            cd C:\Windows\System32 && sc query "Service1" state=all
+        # - name: To check service existence 
+        #   shell: cmd
+        #   run: |
+        #     cd C:\Windows\System32 && sc query "Service1" state=all
 
+
+        - name: To check if service exists or not
+          shell: powershell
+          run: |
+            $service = Get-Service -Name Service1 -ErrorAction SilentlyContinue
+            if($service - eq $ null)
+            {
+              echo "service doesn't exist"
+              Start-Process cmd.exe -Verb RunAs
+              Set-Location -Path "C:\Windows\Microsoft.NET\Framework\v4.0.30319\"
+              Start-Process C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe" -Verb RunAs
+            } else {
+                echo "service does exist"
+                Start-Process cmd.exe -Verb RunAs
+                Set-Location -Path "C:\Windows\Microsoft.NET\Framework\v4.0.30319\"
+                Start-Process C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\WindowsServiceDemo.exe" -Verb RunAs
+                Start-Process C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe" -Verb RunAs
+            }
         
        
         # - name: Run Command Prompt as Administrator and change directory to .NET Framework
