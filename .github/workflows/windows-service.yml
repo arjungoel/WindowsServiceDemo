@@ -59,12 +59,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
           
-      - name: Test
-        shell: powershell
-        run: |
-          C:\"Program Files"\Git\cmd
-          $output = git rev-parse --short=4 HEAD
-          echo $output
+      # - name: Test
+      #   shell: powershell
+      #   run: |
+      #     C:\"Program Files"\Git\cmd
+      #     $output = git rev-parse --short=4 HEAD
+      #     echo $output
 
       - name: To check if service exists or not
         shell: powershell
@@ -74,12 +74,15 @@ jobs:
             echo "Service exist"
             Stop-Service -Name "Service1"
             cd C:\Windows\System32
-            C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\*.exe"
+            for %%I in (C:\actions-runner\_work\*.exe) do (
+              # C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\*.exe"
+              C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "%%~fI"
+          )
           } 
     
-      - name: Download the zip file from S3 to EC2 folder
-        shell: powershell
-        run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/*.exe C:\actions-runner\_work
+      # - name: Download the zip file from S3 to EC2 folder
+      #   shell: powershell
+      #   run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/*.exe C:\actions-runner\_work
       
       # - name: Install the service
       #   shell: powershell
