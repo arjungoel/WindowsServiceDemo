@@ -40,7 +40,7 @@ jobs:
 
             - name: Upload the files from bin folder to S3 bucket
               run: |
-                aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe s3://dotnet-cicd-bucket/windows-service/
+                aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe s3://dotnet-cicd-bucket/
 
     deploy:
         needs: build
@@ -60,7 +60,7 @@ jobs:
 
           - name: Download the zip file from S3 to EC2 folder
             shell: powershell
-            run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/windows-service/WindowsServiceDemo.exe "C:\actions-runner\_work"
+            run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "C:\actions-runner\_work"
             
           - name: To check if service exists or not
             shell: powershell
