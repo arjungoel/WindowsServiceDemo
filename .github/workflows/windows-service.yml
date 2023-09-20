@@ -108,6 +108,49 @@ jobs:
             } else {
                 Write-Host "Service $serviceName is in an unexpected state: $($service.Status)"
             }
+            
+        - name: To check if there is any update in application code
+          shell: powershell
+          run: |
+            # Define the service name and the path to the service executable
+            $serviceName = "Service1"
+            $serviceExecutablePath = "C:\actions_runner\_work\WindowsServiceDemo.exe"
+            
+            # Get the current hash of the service executable
+            $currentHash = Get-FileHash -Path $serviceExecutablePath -Algorithm SHA256
+            
+            # Path to store the previously saved hash (use a writable location)
+            $hashFilePath = "C:\actions_runner\_work\PreviousHash.txt"
+            
+            # Check if the hash file exists
+            if (Test-Path $hashFilePath) {
+                # Read the previously saved hash
+                $previousHash = Get-Content $hashFilePath
+            
+                # Compare the current and previous hashes
+                if ($currentHash.Hash -ne $previousHash) {
+                    # Hashes are different; a code update is detected
+                    Write-Host "Code update detected. Stopping and restarting the service..."
+            
+                    # Stop the service
+                    Stop-Service -Name $serviceName
+            
+                    # Start the service
+                    Start-Service -Name $serviceName
+            
+                    # Save the current hash for future comparisons
+                    $currentHash.Hash | Set-Content -Path $hashFilePath
+            
+                    Write-Host "Service restarted."
+                } else {
+                    Write-Host "No code update detected. The service remains unchanged."
+                }
+            } else {
+                # Hash file doesn't exist; assume it's the first run and save the current hash
+                $currentHash.Hash | Set-Content -Path $hashFilePath
+                Write-Host "Initial hash saved. No code update detected."
+            }
+
        
         # - name: Run Command Prompt as Administrator and change directory to .NET Framework
         #   shell: cmd
