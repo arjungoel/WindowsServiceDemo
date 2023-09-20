@@ -74,39 +74,41 @@ jobs:
               C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
             } else {
               echo "Service does exist"
+              # This will uninstall the service even if the service exists in Running state
               cd C:\Windows\System32
               C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\WindowsServiceDemo.exe"
               cd C:\Windows\System32
               C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
             }
 
-        # - name: Check service status
-        #   shell: powershell
-        #   run: |
-        #     $serviceName = "Service1"
-        #     # Check the service status
-        #     $service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
+        - name: Check service status
+          shell: powershell
+          run: |
+            $serviceName = "Service1"
             
-        #     if ($service -eq $null) {
-        #         Write-Host "Service $serviceName not found."
-        #     } elseif ($service.Status -eq 'Running') {
-        #         Write-Host "Service $serviceName is already running."
-        #     } elseif ($service.Status -eq 'Stopped') {
-        #         Write-Host "Service $serviceName is stopped. Starting it..."
+            # Check the service status
+            $service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
+            
+            if ($service -eq $null) {
+                Write-Host "Service $serviceName not found."
+            } elseif ($service.Status -eq 'Running') {
+                Write-Host "Service $serviceName is already running."
+            } elseif ($service.Status -eq 'Stopped') {
+                Write-Host "Service $serviceName is stopped. Starting it..."
                 
-        #         # Start the service
-        #         Start-Service -Name $serviceName
+                # Start the service
+                Start-Service -Name $serviceName
             
-        #         # Check the service status again
-        #         $service = Get-Service -Name $serviceName
-        #         if ($service.Status -eq 'Running') {
-        #             Write-Host "Service $serviceName has been started successfully."
-        #         } else {
-        #             Write-Host "Failed to start service $serviceName."
-        #         }
-        #     } else {
-        #         Write-Host "Service $serviceName is in an unexpected state: $($service.Status)"
-        #     }
+                # Check the service status again
+                $service = Get-Service -Name $serviceName
+                if ($service.Status -eq 'Running') {
+                    Write-Host "Service $serviceName has been started successfully."
+                } else {
+                    Write-Host "Failed to start service $serviceName."
+                }
+            } else {
+                Write-Host "Service $serviceName is in an unexpected state: $($service.Status)"
+            }
        
         # - name: Run Command Prompt as Administrator and change directory to .NET Framework
         #   shell: cmd
