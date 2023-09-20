@@ -41,6 +41,7 @@ jobs:
         shell: powershell
         run: |
           $output = git rev-parse --short=4 HEAD
+          echo $output
           aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe s3://dotnet-cicd-bucket/
           aws s3 mv s3://dotnet-cicd-bucket/WindowsServiceDemo.exe "s3://dotnet-cicd-bucket/$output-WindowsServiceDemo.exe"
      
@@ -57,25 +58,31 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
+          
+      - name: Test SHA
+        shell: powershell
+        run: |
+          $output = git rev-parse --short=4 HEAD
+          echo $output
 
-      - name: To check if service exists or not
-        shell: powershell
-        run: |
-          $service = Get-Service -Name Service1 -ErrorAction SilentlyContinue
-          if ($service -ne $null) {
-            echo "Service exist"
-            Stop-Service -Name "Service1"
-            cd C:\Windows\System32
-            C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\WindowsServiceDemo.exe"
-          } 
+      # - name: To check if service exists or not
+      #   shell: powershell
+      #   run: |
+      #     $service = Get-Service -Name Service1 -ErrorAction SilentlyContinue
+      #     if ($service -ne $null) {
+      #       echo "Service exist"
+      #       Stop-Service -Name "Service1"
+      #       cd C:\Windows\System32
+      #       C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\WindowsServiceDemo.exe"
+      #     } 
     
-      - name: Download the zip file from S3 to EC2 folder
-        shell: powershell
-        run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/*WindowsServiceDemo.exe C:\actions-runner\_work
+      # - name: Download the zip file from S3 to EC2 folder
+      #   shell: powershell
+      #   run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/*WindowsServiceDemo.exe C:\actions-runner\_work
       
-      - name: Install the service
-        shell: powershell
-        run: |
-          cd C:\Windows\System32
-          C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\*WindowsServiceDemo.exe"
-          Start-Service -Name "Service1"
+      # - name: Install the service
+      #   shell: powershell
+      #   run: |
+      #     cd C:\Windows\System32
+      #     C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\*WindowsServiceDemo.exe"
+      #     Start-Service -Name "Service1"
