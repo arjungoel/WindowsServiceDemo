@@ -1,4 +1,4 @@
-name: "Deploying a CI/CD for Windows Service using GitHub Actions"
+name: "Deploying a CI/CD for Windows Service using GitHub Actions and upload the executable file in Amazon S3"
 
 on:
   workflow_dispatch:
@@ -42,105 +42,105 @@ jobs:
               run: |
                 aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe s3://dotnet-cicd-bucket/
 
-    # deploy:
-    #   needs: build
-    #   runs-on: [ self-hosted, Windows, X64 ]
-    #   defaults:
-    #     run:
-    #       shell: cmd
+    deploy:
+       needs: build
+       runs-on: [ self-hosted, Windows, X64 ]
+       defaults:
+         run:
+           shell: cmd
     
-    #   steps:
+       steps:
     
-    #     - name: Set AWS credentials
-    #       uses: aws-actions/configure-aws-credentials@v1
-    #       with:
-    #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-    #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #         aws-region: ${{ secrets.AWS_REGION }}
+         - name: Set AWS credentials
+           uses: aws-actions/configure-aws-credentials@v1
+           with:
+             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+             aws-region: ${{ secrets.AWS_REGION }}
             
-    #     - name: To check if service exists or not
-    #       shell: powershell
-    #       run: |
-    #         $service = Get-Service -Name Service1 -ErrorAction SilentlyContinue
-    #         if ($service -eq $null) {
-    #           echo "Service doesn't exist"
-    #           cd C:\Windows\System32
-    #           C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
-    #         } else {
-    #           echo "Service does exist"
-    #           # This will uninstall the service even if the service exists in Running state
-    #           cd C:\Windows\System32
-    #           C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\WindowsServiceDemo.exe"
-    #           cd C:\Windows\System32
-    #           C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
-    #         }
+         - name: To check if service exists or not
+           shell: powershell
+           run: |
+             $service = Get-Service -Name Service1 -ErrorAction SilentlyContinue
+             if ($service -eq $null) {
+               echo "Service doesn't exist"
+               cd C:\Windows\System32
+               C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
+             } else {
+               echo "Service does exist"
+               # This will uninstall the service even if the service exists in Running state
+               cd C:\Windows\System32
+               C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\WindowsServiceDemo.exe"
+               cd C:\Windows\System32
+               C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
+             }
 
-    #     - name: Check windows service status
-    #       shell: powershell
-    #       run: |
-    #         $serviceName = "Service1"
-    #         # Check the service status
-    #         $service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
+         - name: Check windows service status
+           shell: powershell
+           run: |
+             $serviceName = "Service1"
+             # Check the service status
+             $service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
             
-    #         if ($service -eq $null) {
-    #             Write-Host "Service $serviceName not found."
-    #         } elseif ($service.Status -eq 'Running') {
-    #             Write-Host "Service $serviceName is already running."
-    #         } elseif ($service.Status -eq 'Stopped') {
-    #             Write-Host "Service $serviceName is stopped. Starting it..."
+             if ($service -eq $null) {
+                 Write-Host "Service $serviceName not found."
+             } elseif ($service.Status -eq 'Running') {
+                 Write-Host "Service $serviceName is already running."
+             } elseif ($service.Status -eq 'Stopped') {
+                 Write-Host "Service $serviceName is stopped. Starting it..."
                 
-    #             # Start the service
-    #             Start-Service -Name $serviceName
+                 # Start the service
+                 Start-Service -Name $serviceName
             
-    #             # Check the service status again
-    #             $service = Get-Service -Name $serviceName
-    #             if ($service.Status -eq 'Running') {
-    #                 Write-Host "Service $serviceName has been started successfully."
-    #             } else {
-    #                 Write-Host "Failed to start service $serviceName."
-    #             }
-    #         } else {
-    #             Write-Host "Service $serviceName is in an unexpected state: $($service.Status)"
-    #         }
+                 # Check the service status again
+                 $service = Get-Service -Name $serviceName
+                 if ($service.Status -eq 'Running') {
+                     Write-Host "Service $serviceName has been started successfully."
+                 } else {
+                     Write-Host "Failed to start service $serviceName."
+                 }
+             } else {
+                 Write-Host "Service $serviceName is in an unexpected state: $($service.Status)"
+             }
             
-    #     - name: To check if there is any update in application code
-    #       shell: powershell
-    #       run: |
-    #         # Define the service name and the path to the service executable
-    #         $serviceName = "Service1"
-    #         $serviceExecutablePath = "C:\actions-runner\_work\WindowsServiceDemo.exe"
+         - name: To check if there is any update in application code
+           shell: powershell
+           run: |
+             # Define the service name and the path to the service executable
+             $serviceName = "Service1"
+             $serviceExecutablePath = "C:\actions-runner\_work\WindowsServiceDemo.exe"
             
-    #         # Get the current hash of the service executable
-    #         $currentHash = Get-FileHash -Path $serviceExecutablePath -Algorithm SHA256
+             # Get the current hash of the service executable
+             $currentHash = Get-FileHash -Path $serviceExecutablePath -Algorithm SHA256
             
-    #         # Path to store the previously saved hash (use a writable location)
-    #         $hashFilePath = "C:\actions-runner\_work\PreviousHash.txt"
+             # Path to store the previously saved hash (use a writable location)
+             $hashFilePath = "C:\actions-runner\_work\PreviousHash.txt"
             
-    #         # Check if the hash file exists
-    #         if (Test-Path $hashFilePath) {
-    #             # Read the previously saved hash
-    #             $previousHash = Get-Content $hashFilePath
+             # Check if the hash file exists
+             if (Test-Path $hashFilePath) {
+                 # Read the previously saved hash
+                 $previousHash = Get-Content $hashFilePath
             
-    #             # Compare the current and previous hashes
-    #             if ($currentHash.Hash -ne $previousHash) {
-    #                 # Hashes are different; a code update is detected
-    #                 Write-Host "Code update detected. Stopping and restarting the service..."
+                 # Compare the current and previous hashes
+                 if ($currentHash.Hash -ne $previousHash) {
+                     # Hashes are different; a code update is detected
+                     Write-Host "Code update detected. Stopping and restarting the service..."
             
-    #                 # Stop the service
-    #                 Stop-Service -Name $serviceName
+                     # Stop the service
+                     Stop-Service -Name $serviceName
             
-    #                 # Start the service
-    #                 Start-Service -Name $serviceName
+                     # Start the service
+                     Start-Service -Name $serviceName
             
-    #                 # Save the current hash for future comparisons
-    #                 $currentHash.Hash | Set-Content -Path $hashFilePath
+                     # Save the current hash for future comparisons
+                     $currentHash.Hash | Set-Content -Path $hashFilePath
             
-    #                 Write-Host "Service restarted."
-    #             } else {
-    #                 Write-Host "No code update detected. The service remains unchanged."
-    #             }
-    #         } else {
-    #             # Hash file doesn't exist; assume it's the first run and save the current hash
-    #             $currentHash.Hash | Set-Content -Path $hashFilePath
-    #             Write-Host "Initial hash saved. No code update detected."
-    #         }          
+                     Write-Host "Service restarted."
+                 } else {
+                     Write-Host "No code update detected. The service remains unchanged."
+                 }
+             } else {
+                 # Hash file doesn't exist; assume it's the first run and save the current hash
+                 $currentHash.Hash | Set-Content -Path $hashFilePath
+                 Write-Host "Initial hash saved. No code update detected."
+             }          
