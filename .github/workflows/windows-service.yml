@@ -62,7 +62,6 @@ jobs:
       - name: Test
         shell: powershell
         run: |
-          cd $GITHUB_WORKSPACE
           $output = C:\"Program Files"\Git\cmd\git  rev-parse --short=4 HEAD
           echo $output
           
