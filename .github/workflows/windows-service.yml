@@ -61,7 +61,7 @@ jobs:
           
       - name: Test
         shell: powershell
-        run: C:\Program Files\Git\cmd\git --version
+        run: C:\"Program Files"\Git\cmd\git --version
         
       # - name: Test SHA
       #   shell: powershell
