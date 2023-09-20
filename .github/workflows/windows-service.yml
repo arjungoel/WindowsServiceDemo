@@ -42,45 +42,52 @@ jobs:
               run: |
                 aws s3 cp D:\a\WindowsServiceDemo\WindowsServiceDemo\WindowsServiceDemo\bin\Release\WindowsServiceDemo.exe s3://dotnet-cicd-bucket/windows-service/
 
-    # deploy:
-    #    needs: build
-    #    runs-on: [ self-hosted, Windows, X64 ]
-    #    defaults:
-    #      run:
-    #        shell: cmd
+    deploy:
+        needs: build
+        runs-on: [ self-hosted, Windows, X64 ]
+        defaults:
+          run:
+            shell: cmd
     
-    #    steps:
+        steps:
     
-    #      - name: Set AWS credentials
-    #        uses: aws-actions/configure-aws-credentials@v1
-    #        with:
-    #          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-    #          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #          aws-region: ${{ secrets.AWS_REGION }}
+          - name: Set AWS credentials
+            uses: aws-actions/configure-aws-credentials@v1
+            with:
+              aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+              aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+              aws-region: ${{ secrets.AWS_REGION }}
 
-    #      - name: Download the zip file from S3 to EC2 folder
-    #        shell: powershell
-    #        run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/windows-service/WindowsServiceDemo.exe "C:\actions-runner\_work"
+          - name: Download the zip file from S3 to EC2 folder
+            shell: powershell
+            run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://dotnet-cicd-bucket/windows-service/WindowsServiceDemo.exe "C:\actions-runner\_work"
             
-    #      - name: To check if service exists or not
-    #        shell: powershell
-    #        run: |
-    #          $service = Get-Service -Name Service1 -ErrorAction SilentlyContinue
-    #          if ($service -eq $null) {
-    #            echo "Service doesn't exist"
-    #            cd C:\Windows\System32
-    #            C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
-    #            Start-Service -Name "Service1"
-    #          } else {
-    #            echo "Service does exist"
-    #            Stop-Service -Name "Service1"
-    #            # This will uninstall the service even if the service exists in Running state
-    #            cd C:\Windows\System32
-    #            C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\WindowsServiceDemo.exe"
-    #            cd C:\Windows\System32
-    #            C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
-    #            Start-Service -Name "Service1"
-    #          }
+          - name: To check if service exists or not
+            shell: powershell
+            run: |
+              $service = Get-Service -Name Service1 -ErrorAction SilentlyContinue
+              if ($service -eq $null) {
+                echo "Service doesn't exist"
+                cd C:\Windows\System32
+                C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
+                Start-Service -Name "Service1"
+              } else {
+                echo "Service does exist"
+                
+                # Stop the service...
+                Stop-Service -Name "Service1"
+
+                # Uninstall the service...
+                cd C:\Windows\System32
+                C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\WindowsServiceDemo.exe"
+
+                # Install the service...
+                cd C:\Windows\System32
+                C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe "C:\actions-runner\_work\WindowsServiceDemo.exe"
+
+                # Start the service...
+                Start-Service -Name "Service1"
+              }
 
          # - name: Check windows service status
          #   shell: powershell
