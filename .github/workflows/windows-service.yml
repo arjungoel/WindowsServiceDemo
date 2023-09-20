@@ -74,10 +74,8 @@ jobs:
             echo "Service exist"
             Stop-Service -Name "Service1"
             cd C:\Windows\System32
-            for %%I in (C:\actions-runner\_work\*.exe) do (
-              # C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "C:\actions-runner\_work\*.exe"
-              C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u "%%~fI"
-          )
+            C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u -Filter "C:\actions-runner\_work\*.exe"
+             
           } 
     
       # - name: Download the zip file from S3 to EC2 folder
