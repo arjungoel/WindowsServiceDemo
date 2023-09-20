@@ -1,4 +1,4 @@
-name: Deploying a CI/CD for Windows Service using GitHub Actions and upload the executable file in Amazon S3
+name: "Deploying a CI/CD for Windows Service using GitHub Actions and upload the executable file in Amazon S3"
 
 on:
   workflow_dispatch:
@@ -42,7 +42,7 @@ jobs:
             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             aws-region: ${{ secrets.AWS_REGION }}
 
-        - name: Upload the files from bin folder to S3 bucket
+        - name: Upload the windows service executable (.exe) file to S3 bucket
           shell: powershell
           env:
             EXECUTABLE_PATH: ${{ secrets.EXECUTABLE_PATH }}
@@ -63,7 +63,7 @@ jobs:
            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
            aws-region: ${{ secrets.AWS_REGION }}
           
-       - name: To check if service exists or not
+       - name: To check Windows Service existence (exists or not)
          shell: powershell
          run: |
            $service = Get-Service -Name ${{ env.SERVICE_NAME }}
@@ -75,7 +75,7 @@ jobs:
              
            } 
     
-       - name: Download the zip file from S3 to EC2 folder
+       - name: Download the Windows Service Executable (.exe) file from S3 bucket to EC2 instance location
          shell: powershell
          env:
            EC2_LOCATION: ${{ secrets.EC2_LOCATION }}
