@@ -1,4 +1,4 @@
-name: "Deploying a CI/CD for Windows Service using GitHub Actions and upload the executable file in Amazon S3"
+name: Deploying a CI/CD for Windows Service using GitHub Actions and upload the executable file in Amazon S3
 
 on:
   workflow_dispatch:
