@@ -47,7 +47,7 @@ jobs:
           env:
             EXECUTABLE_PATH: ${{ secrets.EXECUTABLE_PATH }}
           run: |
-            aws s3 cp ${{ env.EXECUTABLE_PATH }} s3://${{ env.S3_BUCKET_NAME }}/
+            aws s3 cp ${{ env.EXECUTABLE_PATH }} s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/
      
     deploy:
       needs: build
@@ -79,7 +79,7 @@ jobs:
          shell: powershell
          env:
            EC2_LOCATION: ${{ secrets.EC2_LOCATION }}
-         run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/WindowsServiceDemo.exe ${{ env.EC2_LOCATION }}
+         run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/WindowsServiceDemo.exe ${{ env.EC2_LOCATION }}
       
        - name: Install the service
          shell: powershell
