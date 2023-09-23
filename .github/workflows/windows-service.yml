@@ -76,9 +76,6 @@ jobs:
              C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
              Start-Service -Name ${{ env.SERVICE_NAME }} 
              echo "Service started"
-             $process = Start-Process powershell -ArgumentList "Stop-Process -ID $service.processid -Force" -Verb RunAs
-             echo "Service Process ID:$process"
-
            } else {
              echo "Service exist"
              echo "Stop the service"
