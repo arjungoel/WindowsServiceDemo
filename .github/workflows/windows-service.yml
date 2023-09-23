@@ -67,7 +67,7 @@ jobs:
          shell: powershell
          run: |
            $service = Get-Service -Name ${{ env.SERVICE_NAME }}
-           if ($service -ne $null) {
+           if ($service -ne $null -and $service.Status -eq "Running") {
              echo "Service exist"
              $process = Get-Process -Id $service.Id
              echo $process
