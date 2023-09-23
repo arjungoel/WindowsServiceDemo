@@ -62,38 +62,32 @@ jobs:
            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
            aws-region: ${{ secrets.AWS_REGION }}
+          
+       - name: To check Windows Service existence (exists or not)
+         shell: powershell
+         run: |
+           $service = Get-Service -Name ${{ env.SERVICE_NAME }}
+           if ($service -ne $null) {
+             echo "Service exist"
+             $process = Get-Process -Name ${{ env.SERVICE_NAME }}
+             echo "Process Name: $($process.ProcessName)"
+             echo "Process ID: $($process.Id)"
+             Stop-Service -Name ${{ env.SERVICE_NAME }}
+             Stop-Process -Id $process.Id -Force
+             cd C:\Windows\System32
+             C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u ${{ env.EXECUTABLE_PATH_RUNNER }}
+             
+           } 
     
        - name: Download the Windows Service Executable (.exe) file from S3 bucket to EC2 instance location
          shell: powershell
          env:
            EC2_LOCATION: ${{ secrets.EC2_LOCATION }}
          run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/WindowsServiceDemo.exe ${{ env.EC2_LOCATION }}
-
-       # - name: To check Windows Service existence along with process id
-       #   shell: powershell
-       #   run: |
-       #     $service = Get-Service -Name ${{ env.SERVICE_NAME }} -ErrorAction SilentlyContinue
-       #     if ($service -eq $null) {
-       #       echo "Install the service"
-       #       cd C:\Windows\System32
-       #       C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
-       #       Start-Service -Name ${{ env.SERVICE_NAME }} 
-       #       echo "Service started"
-       #     } else {
-       #       echo "Service exist"
-       #       $process = Get-Process -Name ${{ env.SERVICE_NAME }} -ErrorAction SilentlyContinue
-       #       echo "Process Name: $($process.ProcessName)"
-       #       echo "Process ID: $($process.Id)"
-       #       Stop-Service -Name ${{ env.SERVICE_NAME }}
-       #       Stop-Process -Id $process.Id -Force
-       #       cd C:\Windows\System32
-       #       C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u ${{ env.EXECUTABLE_PATH_RUNNER }}    
-       #       Start-Service -Name ${{ env.SERVICE_NAME }}   
-       #     }
       
-       # - name: Install the service
-       #   shell: powershell
-       #   run: |
-       #     cd C:\Windows\System32
-       #     C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
-       #     Start-Service -Name ${{ env.SERVICE_NAME }}
+       - name: Install the service
+         shell: powershell
+         run: |
+           cd C:\Windows\System32
+           C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
+           Start-Service -Name ${{ env.SERVICE_NAME }}
