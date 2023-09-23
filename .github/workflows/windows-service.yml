@@ -82,7 +82,7 @@ jobs:
              Stop-Service -Name ${{ env.SERVICE_NAME }}
              echo "Kill the Process associated with service"
              $service = Get-CimInstance -class win32_service | Where-Object name -eq ${{ env.SERVICE_NAME }} | select processid
-             Stop-Process -ID $service.processid -Force
+             Start-Process powershell -ArgumentList "Stop-Process -ID $service.processid -Force" -Verb RunAs
              echo "Killed process"
              echo "Uninstall the service"
              cd C:\Windows\System32           
