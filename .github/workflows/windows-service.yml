@@ -69,7 +69,7 @@ jobs:
            $service = Get-Service -Name ${{ env.SERVICE_NAME }}
            if ($service -ne $null) {
              echo "Service exist"
-             $process = Get-Process -Name $serviceName -ErrorAction SilentlyContinue
+             $process = Get-Process -Name ${{ env.SERVICE_NAME }} -ErrorAction SilentlyContinue
              if ($process -ne $null) {
                echo "Process Name: $($process.ProcessName)"
                echo "Process ID: $($process.Id)"
