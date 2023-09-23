@@ -67,10 +67,10 @@ jobs:
          shell: powershell
          run: |
            $service = Get-Service -Name ${{ env.SERVICE_NAME }}
-           $process = Get-Process -Id $service.Id
-           echo $process
            if ($service -ne $null) {
              echo "Service exist"
+             $process = Get-Process -Id $service.Id
+             echo $process
              Stop-Service -Name ${{ env.SERVICE_NAME }}
              cd C:\Windows\System32
              C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u ${{ env.EXECUTABLE_PATH_RUNNER }}
