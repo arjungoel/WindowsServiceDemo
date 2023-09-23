@@ -80,6 +80,10 @@ jobs:
              echo "Service exist"
              echo "Stop the service"
              Stop-Service -Name ${{ env.SERVICE_NAME }}
+             echo "Kill the Process associated with service"
+             $service = Get-CimInstance -class win32_service | Where-Object name -eq ${{ env.SERVICE_NAME }} | select processid
+             Stop-Process -ID $service.processid -Force
+             echo "Killed process"
              echo "Uninstall the service"
              cd C:\Windows\System32           
              C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u ${{ env.EXECUTABLE_PATH_RUNNER }}
