@@ -72,7 +72,7 @@ jobs:
              $process = Get-Process -Name $serviceName -ErrorAction SilentlyContinue
              if ($process -ne $null) {
                echo "Process Name: $($process.ProcessName)"
-               echo "Process ID: $($process.Id)
+               echo "Process ID: $($process.Id)"
                Stop-Service -Name ${{ env.SERVICE_NAME }}
                Stop-Process -Id $process.Id -Force
                cd C:\Windows\System32
