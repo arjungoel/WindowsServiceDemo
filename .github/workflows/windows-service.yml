@@ -82,15 +82,13 @@ jobs:
            } else {
              echo "Service exist"
              $process = Get-Process -Name ${{ env.SERVICE_NAME }} -ErrorAction SilentlyContinue
-             if ($process -ne $null) {
-               Write-Output "Process Name: $($process.ProcessName)"
-               Write-Output "Process ID: $($process.Id)"
-               Stop-Service -Name ${{ env.SERVICE_NAME }}
-               Stop-Process -Id $process.Id -Force
-               cd C:\Windows\System32
-               C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u ${{ env.EXECUTABLE_PATH_RUNNER }}    
-               Start-Service -Name ${{ env.SERVICE_NAME }} 
-             }
+             echo "Process Name: $($process.ProcessName)"
+             echo "Process ID: $($process.Id)"
+             Stop-Service -Name ${{ env.SERVICE_NAME }}
+             Stop-Process -Id $process.Id -Force
+             cd C:\Windows\System32
+             C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u ${{ env.EXECUTABLE_PATH_RUNNER }}    
+             Start-Service -Name ${{ env.SERVICE_NAME }}   
            }
       
        # - name: Install the service
