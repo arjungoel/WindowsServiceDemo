@@ -83,8 +83,8 @@ jobs:
              echo "Service exist"
              $process = Get-Process -Name ${{ env.SERVICE_NAME }} -ErrorAction SilentlyContinue
              if ($process -ne $null) {
-               echo "Process Name: $($process.ProcessName)"
-               echo "Process ID: $($process.Id)"
+               Write-Host "Process Name: $($process.ProcessName)"
+               Write-Host "Process ID: $($process.Id)"
                Stop-Service -Name ${{ env.SERVICE_NAME }}
                Stop-Process -Id $process.Id -Force
                cd C:\Windows\System32
