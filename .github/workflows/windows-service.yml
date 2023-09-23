@@ -11,6 +11,7 @@ env:
   S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
   EXECUTABLE_PATH_RUNNER: ${{ secrets.EXECUTABLE_PATH_RUNNER }}
   SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+  EC2_LOCATION: ${{ secrets.EC2_LOCATION }}
 
 jobs:
 
@@ -77,19 +78,24 @@ jobs:
                Stop-Process -Id $process.Id -Force
                cd C:\Windows\System32
                C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u ${{ env.EXECUTABLE_PATH_RUNNER }}
+            } else {
+                C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/WindowsServiceDemo.exe ${{ env.EC2_LOCATION }}
+                cd C:\Windows\System32
+                C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
+                Start-Service -Name ${{ env.SERVICE_NAME }}
             }
              
            } 
     
-       - name: Download the Windows Service Executable (.exe) file from S3 bucket to EC2 instance location
-         shell: powershell
-         env:
-           EC2_LOCATION: ${{ secrets.EC2_LOCATION }}
-         run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/WindowsServiceDemo.exe ${{ env.EC2_LOCATION }}
+       # - name: Download the Windows Service Executable (.exe) file from S3 bucket to EC2 instance location
+       #   shell: powershell
+       #   env:
+       #     EC2_LOCATION: ${{ secrets.EC2_LOCATION }}
+       #   run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/WindowsServiceDemo.exe ${{ env.EC2_LOCATION }}
       
-       - name: Install the service
-         shell: powershell
-         run: |
-           cd C:\Windows\System32
-           C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
-           Start-Service -Name ${{ env.SERVICE_NAME }}
+       # - name: Install the service
+       #   shell: powershell
+       #   run: |
+       #     cd C:\Windows\System32
+       #     C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
+       #     Start-Service -Name ${{ env.SERVICE_NAME }}
