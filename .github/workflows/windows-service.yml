@@ -76,4 +76,14 @@ jobs:
              C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
              Start-Service -Name ${{ env.SERVICE_NAME }} 
              echo "Service started"
-           } 
+           } else {
+             echo "Service exist"
+             echo "Stop the service"
+             Stop-Service -Name ${{ env.SERVICE_NAME }}
+             echo "Install the service"
+             cd C:\Windows\System32
+             C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/WindowsServiceDemo.exe ${{ env.EC2_LOCATION }}
+             C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
+             Start-Service -Name ${{ env.SERVICE_NAME }} 
+             echo "Service started"
+           }
