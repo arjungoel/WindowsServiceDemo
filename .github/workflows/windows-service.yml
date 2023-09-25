@@ -67,7 +67,7 @@ jobs:
        - name: To check Windows Service existence (exists or not)
          shell: powershell
          run: |
-           $service = Get-Service -Name ${{ env.SERVICE_NAME }}
+           $service = Get-Service -Name ${{ env.SERVICE_NAME }} -ErrorAction SilentlyContinue
            if ($service -ne $null) {
              echo "Service exist"
              Stop-Service -Name ${{ env.SERVICE_NAME }} -ErrorAction SilentlyContinue
