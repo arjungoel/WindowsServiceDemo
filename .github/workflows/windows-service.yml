@@ -74,11 +74,13 @@ jobs:
              cd C:\Windows\System32
              C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u ${{ env.EXECUTABLE_PATH_RUNNER }}
              $id = Get-WmiObject -Class Win32_Service -Filter 'Name LIKE ${{ env.SERVICE_NAME }}' | Select-Object -ExpandProperty ProcessId
-             $process = Get-Process -Id $id
-             if ($process -ne $null) {
-               Start-Process powershell -ArgumentList "Stop-Process -Id $process.Id -Force" -Verb RunAs
-            }
-           } 
+             if ($id -ne $null) {
+               $process = Get-Process -Id $id
+               if ($process -ne $null) {
+                 Start-Process powershell -ArgumentList "Stop-Process -Id $process.Id -Force" -Verb RunAs
+              }
+           }
+           }
     
        - name: Download the Windows Service Executable (.exe) file from S3 bucket to EC2 instance location
          shell: powershell
