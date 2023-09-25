@@ -63,34 +63,32 @@ jobs:
            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
            aws-region: ${{ secrets.AWS_REGION }}
-          
+           
        - name: To check Windows Service existence (exists or not)
          shell: powershell
          run: |
-           $service = Get-Service -Name ${{ env.SERVICE_NAME }} -ErrorAction SilentlyContinue
-           if ($service -eq $null) {
-             echo "Service doesn't exist"
-             echo "Install the service"
-             cd C:\Windows\System32
-             C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/WindowsServiceDemo.exe ${{ env.EC2_LOCATION }}
-             C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
-             Start-Service -Name ${{ env.SERVICE_NAME }} 
-             echo "Service started"
-           } else {
+           $service = Get-Service -Name ${{ env.SERVICE_NAME }}
+           if ($service -ne $null) {
              echo "Service exist"
-             echo "Stop the service"
-             Stop-Service -Name ${{ env.SERVICE_NAME }}
-             echo "Kill the Process associated with service"
-             $service = Get-CimInstance -class win32_service | Where-Object name -eq ${{ env.SERVICE_NAME }} | select processid
-             Start-Process powershell -ArgumentList "Stop-Process -ID $service.processid -Force" -Verb RunAs
-             echo "Killed process"
-             echo "Uninstall the service"
-             cd C:\Windows\System32           
-             C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u ${{ env.EXECUTABLE_PATH_RUNNER }}
-             echo "Install the service"
+             Stop-Service -Name ${{ env.SERVICE_NAME }} -ErrorAction SilentlyContinue
              cd C:\Windows\System32
-             C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/WindowsServiceDemo.exe ${{ env.EC2_LOCATION }}
-             C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
-             Start-Service -Name ${{ env.SERVICE_NAME }} 
-             echo "Service started"
-           }
+             C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u ${{ env.EXECUTABLE_PATH_RUNNER }}
+             $id = Get-WmiObject -Class Win32_Service -Filter 'Name LIKE ${{ env.SERVICE_NAME }}' | Select-Object -ExpandProperty ProcessId
+             $process = Get-Process -Id $id
+             if ($process -ne $null) {
+               Start-Process powershell -ArgumentList "Stop-Process -Id $process.Id -Force" -Verb RunAs
+            }
+           } 
+    
+       - name: Download the Windows Service Executable (.exe) file from S3 bucket to EC2 instance location
+         shell: powershell
+         env:
+           EC2_LOCATION: ${{ secrets.EC2_LOCATION }}
+         run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/WindowsServiceDemo.exe ${{ env.EC2_LOCATION }}
+      
+       - name: Install the service
+         shell: powershell
+         run: |
+           cd C:\Windows\System32
+           C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
+           Start-Service -Name ${{ env.SERVICE_NAME }}
