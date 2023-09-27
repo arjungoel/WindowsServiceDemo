@@ -88,7 +88,7 @@ jobs:
            EC2_LOCATION: ${{ secrets.EC2_LOCATION }}
          run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/WindowsServiceDemo.exe ${{ env.EC2_LOCATION }}
       
-       - name: Install the service
+       - name: Install the windows service
          shell: powershell
          run: |
            cd C:\Windows\System32
