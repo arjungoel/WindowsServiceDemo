@@ -71,8 +71,6 @@ jobs:
            if ($service -ne $null -and $service.Status -eq "Running") {
              echo "Service exist"
              Stop-Service -Name ${{ env.SERVICE_NAME }} -Force
-
-             cmd.exe /C "taskkill /f /im WindowsServiceDemo.exe"
              
              Start-Sleep -Seconds 10
              
