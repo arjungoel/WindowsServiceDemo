@@ -71,6 +71,11 @@ jobs:
            if ($service -ne $null -and $service.Status -eq "Running") {
              echo "Service exist"
              Stop-Service -Name ${{ env.SERVICE_NAME }} -Force
+
+             cmd.exe /C "taskkill /f /im WindowsServiceDemo.exe"
+             
+             Start-Sleep -Seconds 10
+             
              cd C:\Windows\System32
              C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u ${{ env.EXECUTABLE_PATH_RUNNER }}            
            }
