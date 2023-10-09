@@ -71,7 +71,9 @@ jobs:
              $service = Get-Service -Name ${{ env.SERVICE_NAME }} -ErrorAction SilentlyContinue
              if ($service -ne $null -and $service.Status -eq "Running") {
                echo "Service exist"
-               Stop-Service -Name ${{ env.SERVICE_NAME }} -Force
+               Stop-Service -Name ${{ env.SERVICE_NAME }}
+
+               Remove-Service -Name ${{ env.SERVICE_NAME }}
                
                Start-Sleep -Seconds 10
                
