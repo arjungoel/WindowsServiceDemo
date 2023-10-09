@@ -115,7 +115,7 @@ jobs:
                     "DeleteOnTermination": true
                   }
                 ],
-                "ImageId": ${{ env.AMI_ID }},
+                "ImageId": "ami-0dbd277bdbc4e65f9",
                 "InstanceType": "t2.micro",
                 "TagSpecifications": [
                   {
