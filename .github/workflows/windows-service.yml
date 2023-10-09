@@ -14,7 +14,6 @@ env:
   EC2_LOCATION: ${{ secrets.EC2_LOCATION }}
 
 jobs:
-
        build:
          runs-on: windows-latest
          defaults:
@@ -98,3 +97,14 @@ jobs:
              $instance_id = Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/instance-id
              $ami_name = "poc-ami-$(Get-Date -Format 'yyyyMMddHHmmss')"
              $ami_id = (aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId
+
+            
+             $launch_template_name = "my-launch-template"
+             $launch_template_version_description = "1"
+             $instance_type = "t2.micro"
+             $key_name = "iis-web-server-demo"
+             $security_group_ids = "sg-089b265ba5151931e"
+             $subnet_id = "subnet-0c4b0776a2f30cb61"
+
+             aws ec2 create-launch-template --launch-template-name $launch_template_name --version-description $launch_template_version_description --block-device-mappings "[{\"DeviceName\":\"/dev/xvda\",\"Ebs\":{\"DeleteOnTermination\":true,\"VolumeType\":\"gp2\",\"VolumeSize\":8}}]" --instance-type $instance_type --key-name $key_name --security-group-ids $security_group_ids --subnet-id $subnet_id --block-device-mappings "[{\"DeviceName\":\"/dev/xvda\",\"Ebs\":{\"DeleteOnTermination\":true,\"VolumeType\":\"gp2\",\"VolumeSize\":8}}]" --image-id $ami_id
+            
