@@ -72,8 +72,6 @@ jobs:
              if ($service -ne $null -and $service.Status -eq "Running") {
                echo "Service exist"
                Stop-Service -Name ${{ env.SERVICE_NAME }}
-
-               SC Delete ${{ env.SERVICE_NAME }}
                
                Start-Sleep -Seconds 10
                
