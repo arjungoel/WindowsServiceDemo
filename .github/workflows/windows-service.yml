@@ -98,14 +98,47 @@ jobs:
              $instance_id = Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/instance-id
              $ami_name="poc-ami-$(Get-Date -Format 'yyyyMMddHHmmss')"
              $ami_id=(aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId
-             echo "AMI_ID=$ami_id" >> $GITHUB_ENV
              
          - name: Create the JSON file for Launch Template specifications
            id: create-json
            uses: jsdaniell/create-json@v1.2.2
            with:
              name: "launch-template.json"
-             json: '{"NetworkInterfaces": [{"DeviceIndex": 0, "AssociatePublicIpAddress": true, "Groups": ["sg-089b265ba5151931e"], "DeleteOnTermination": true }], "ImageId": "$GITHUB_ENV", "InstanceType": "t2.micro", "TagSpecifications": [{"ResourceType": "instance", "Tags": [{"Key": "environment", "Value": "development"}, {"Key": "Name", "Value": "poc-lt"}]}, {"ResourceType": "volume", "Tags": [{"Key": "environment", "Value": "production"}, {"Key": "Name", "Value": "poc-lt"}]}], "BlockDeviceMappings": [{"DeviceName": "/dev/sda1", "Ebs": {"VolumeSize": 100}}]}'
+             json: |
+               {
+                "NetworkInterfaces": [
+                  {
+                    "DeviceIndex": 0,
+                    "AssociatePublicIpAddress": true,
+                    "Groups": ["sg-089b265ba5151931e"],
+                    "DeleteOnTermination": true
+                  }
+                ],
+                "ImageId": ${{ env.AMI_ID }},
+                "InstanceType": "t2.micro",
+                "TagSpecifications": [
+                  {
+                    "ResourceType": "instance",
+                    "Tags": [
+                      {"Key": "environment", "Value": "development"},
+                      {"Key": "Name", "Value": "poc-lt"}
+                    ]
+                  },
+                  {
+                    "ResourceType": "volume",
+                    "Tags": [
+                      {"Key": "environment", "Value": "development"},
+                      {"Key": "Name", "Value": "poc-lt"}
+                    ]
+                  }
+                ],
+                "BlockDeviceMappings": [
+                  {
+                    "DeviceName": "/dev/sda1",
+                    "Ebs": {"VolumeSize": 100}
+                  }
+                ]
+               }
 
          - name: Create EC2 Launch Template
            shell: powershell
