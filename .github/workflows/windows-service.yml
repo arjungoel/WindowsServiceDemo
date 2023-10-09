@@ -15,43 +15,43 @@ env:
 
 jobs:
 
-     build:
-       runs-on: windows-latest
-       defaults:
-         run:
-           shell: cmd
-       steps:
-         - name: Checkout code repository
-           uses: actions/checkout@v3
+     # build:
+     #   runs-on: windows-latest
+     #   defaults:
+     #     run:
+     #       shell: cmd
+     #   steps:
+     #     - name: Checkout code repository
+     #       uses: actions/checkout@v3
 
-         - name: Setup MSBuild
-           uses: microsoft/setup-msbuild@v1
+     #     - name: Setup MSBuild
+     #       uses: microsoft/setup-msbuild@v1
 
-         - name: Setup NuGet
-           uses: NuGet/setup-nuget@v1.0.5
+     #     - name: Setup NuGet
+     #       uses: NuGet/setup-nuget@v1.0.5
 
-         - name: Restore Packages
-           run: nuget restore WindowsServiceDemo.sln
+     #     - name: Restore Packages
+     #       run: nuget restore WindowsServiceDemo.sln
 
-         - name: Build solution
-           run: msbuild WindowsServiceDemo.sln /p:Configuration=Release /p:DeployOnBuild=true
+     #     - name: Build solution
+     #       run: msbuild WindowsServiceDemo.sln /p:Configuration=Release /p:DeployOnBuild=true
       
-         - name: Set AWS credentials
-           uses: aws-actions/configure-aws-credentials@v1
-           with:
-             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-             aws-region: ${{ secrets.AWS_REGION }}
+     #     - name: Set AWS credentials
+     #       uses: aws-actions/configure-aws-credentials@v1
+     #       with:
+     #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+     #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+     #         aws-region: ${{ secrets.AWS_REGION }}
 
-         - name: Upload the windows service executable (.exe) file to S3 bucket
-           shell: powershell
-           env:
-             EXECUTABLE_PATH: ${{ secrets.EXECUTABLE_PATH }}
-           run: |
-             aws s3 cp ${{ env.EXECUTABLE_PATH }} s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/
+     #     - name: Upload the windows service executable (.exe) file to S3 bucket
+     #       shell: powershell
+     #       env:
+     #         EXECUTABLE_PATH: ${{ secrets.EXECUTABLE_PATH }}
+     #       run: |
+     #         aws s3 cp ${{ env.EXECUTABLE_PATH }} s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/
      
      deploy:
-      needs: build
+      # needs: build
       runs-on: [ self-hosted, Windows, X64 ]
       defaults:
         run:
@@ -98,4 +98,29 @@ jobs:
            $ami_name="poc-ami-$(Get-Date -Format 'yyyyMMddHHmmss')"
            $ami_id=(aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId
            
+       - name: Create a new launch template
+         run: |
+           $launchTemplateData = @{
+              NetworkInterfaces = @(
+                  @{
+                      AssociatePublicIpAddress = $true
+                      DeviceIndex = 0
+                      SubnetId = "subnet-0c4b0776a2f30cb61"
+                  }
+              )
+              ImageId = "ami-00a2f3e0afcfe78a9"
+              InstanceType = "t2.micro"
+              TagSpecifications = @(
+                  @{
+                      ResourceType = "instance"
+                      Tags = @(
+                          @{
+                              Key = "Name"
+                              Value = "poc-template"
+                          }
+                      )
+                  }
+              )
+           }
 
+           aws ec2 create-launch-template --launch-template-name TemplateForPoc --version-description WebVersion1 --launch-template-data (ConvertTo-Json $launchTemplateData)
