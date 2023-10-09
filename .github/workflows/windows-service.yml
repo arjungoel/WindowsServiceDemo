@@ -96,7 +96,8 @@ jobs:
            shell: powershell
            run: |
              $instance_id = Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/instance-id
-             $ami_name="poc-ami-$(Get-Date -Format 'yyyyMMddHHmmss')"
+             $ami_name = "poc-ami-$(Get-Date -Format 'yyyyMMddHHmmss')"
+             $ami_id = (aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId
              $launch_template_data = @{
                 NetworkInterfaces = @(
                     @{
@@ -106,7 +107,7 @@ jobs:
                         DeleteOnTermination = $true
                     }
                 )
-                ImageId = $ami_id
+                ImageId = $ami_id  # Assign the value of $ami_id here
                 InstanceType = 't2.micro'
                 BlockDeviceMappings = @(
                     @{
@@ -116,10 +117,12 @@ jobs:
                         }
                     }
                 )
-              } | ConvertTo-Json
+             } | ConvertTo-Json
+            
+            
+             $launch_template = (aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data $launch_template_data --region ap-south-1)
+             Write-Host "Launch Template: $launch_template"
 
-              $launch_template = (aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data $launch_template_data --region ap-south-1)
-              Write-Host "Launch Template: $launch_template"    
 
               
          # - name: Create the JSON file for Launch Template specifications
