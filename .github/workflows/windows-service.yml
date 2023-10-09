@@ -143,5 +143,5 @@ jobs:
          - name: Create EC2 Launch Template
            shell: powershell
            run: |
-             $launch_template=( aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data file://launch-template.json --region ap-south-1
+             $launch_template=(aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data file://launch-template.json --region ap-south-1)
              
