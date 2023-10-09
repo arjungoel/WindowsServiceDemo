@@ -100,51 +100,51 @@ jobs:
          #     $ami_id=(aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId
          #     echo "AMI_ID=$ami_id" >> $GITHUB_ENV
              
-         - name: Create the JSON file for Launch Template specifications
-           id: create-json
-           uses: jsdaniell/create-json@v1.2.2
-           with:
-             name: "launch-template.json"
-             json: |
-               {
-                "NetworkInterfaces": [
-                  {
-                    "DeviceIndex": 0,
-                    "AssociatePublicIpAddress": true,
-                    "Groups": ["sg-089b265ba5151931e"],
-                    "DeleteOnTermination": true
-                  }
-                ],
-                "ImageId": "ami-0dbd277bdbc4e65f9",
-                "InstanceType": "t2.micro",
-                "TagSpecifications": [
-                  {
-                    "ResourceType": "instance",
-                    "Tags": [
-                      {"Key": "environment", "Value": "development"},
-                      {"Key": "Name", "Value": "poc-lt"}
-                    ]
-                  },
-                  {
-                    "ResourceType": "volume",
-                    "Tags": [
-                      {"Key": "environment", "Value": "development"},
-                      {"Key": "Name", "Value": "poc-lt"}
-                    ]
-                  }
-                ],
-                "BlockDeviceMappings": [
-                  {
-                    "DeviceName": "/dev/sda1",
-                    "Ebs": {"VolumeSize": 100}
-                  }
-                ]
-               }
+         # - name: Create the JSON file for Launch Template specifications
+         #   id: create-json
+         #   uses: jsdaniell/create-json@v1.2.2
+         #   with:
+         #     name: "launch-template.json"
+         #     json: |
+         #       {
+         #        "NetworkInterfaces": [
+         #          {
+         #            "DeviceIndex": 0,
+         #            "AssociatePublicIpAddress": true,
+         #            "Groups": ["sg-089b265ba5151931e"],
+         #            "DeleteOnTermination": true
+         #          }
+         #        ],
+         #        "ImageId": "ami-0dbd277bdbc4e65f9",
+         #        "InstanceType": "t2.micro",
+         #        "TagSpecifications": [
+         #          {
+         #            "ResourceType": "instance",
+         #            "Tags": [
+         #              {"Key": "environment", "Value": "development"},
+         #              {"Key": "Name", "Value": "poc-lt"}
+         #            ]
+         #          },
+         #          {
+         #            "ResourceType": "volume",
+         #            "Tags": [
+         #              {"Key": "environment", "Value": "development"},
+         #              {"Key": "Name", "Value": "poc-lt"}
+         #            ]
+         #          }
+         #        ],
+         #        "BlockDeviceMappings": [
+         #          {
+         #            "DeviceName": "/dev/sda1",
+         #            "Ebs": {"VolumeSize": 100}
+         #          }
+         #        ]
+         #       }
 
-         - name: Create EC2 Launch Template
-           shell: powershell
-           run: |
-             $launch_template=( aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data file://launch-template.json --region ap-south-1)
+         # - name: Create EC2 Launch Template
+         #   shell: powershell
+         #   run: |
+         #     $launch_template=( aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data file://launch-template.json --region ap-south-1)
 
          - name: Update Auto Scaling group with new Launch Template
            shell: powershell
