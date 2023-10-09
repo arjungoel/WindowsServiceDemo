@@ -97,25 +97,5 @@ jobs:
            $instance_id = Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/instance-id
            $ami_name="poc-ami-$(Get-Date -Format 'yyyyMMddHHmmss')"
            $ami_id=(aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId
-           # Create a new launch template
-           $launch_template=(aws ec2 create-launch-template --launch-template-name TemplateForPoc --version-description WebVersion1 --launch-template-data '{
-            "NetworkInterfaces": [{
-              "AssociatePublicIpAddress": true,
-              "DeviceIndex": 0,
-              "Ipv6AddressCount": 1,
-              "SubnetId": "subnet-0c4b0776a2f30cb61"
-            }],
-            "ImageId": "' + $ami_id + '",
-            "InstanceType": "t2.micro",
-            "TagSpecifications": [{
-              "ResourceType": "instance",
-              "Tags": [{
-                "Key": "Name",
-                "Value": "poc-template"
-              }]
-            }]
-            }')
-          
-                
-                     
+           
 
