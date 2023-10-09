@@ -98,10 +98,8 @@ jobs:
              $instance_id = Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/instance-id
              $ami_name="poc-ami-$(Get-Date -Format 'yyyyMMddHHmmss')"
              $ami_id=(aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId
-
-         - name: Fetch AMI ID
-           shell: powershell
-           run: echo $ami_id
+             echo "AMI_ID=$ami_id" >> $GITHUB_ENV
+              
          - name: Create the JSON file for Launch Template specifications
            id: create-json
            uses: jsdaniell/create-json@v1.2.2
@@ -117,7 +115,7 @@ jobs:
                     "DeleteOnTermination": true
                   }
                 ],
-                "ImageId": "${{ env.AMI_ID }}",
+                "ImageId": ${{ env.AMI_ID }},
                 "InstanceType": "t2.micro",
                 "TagSpecifications": [
                   {
