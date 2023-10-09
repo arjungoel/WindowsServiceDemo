@@ -132,9 +132,10 @@ jobs:
                   }
               )
              }
-             $lt_json = $lt_data | ConvertTo-Json
-             $launch_template = (aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data "$lt_json" --region ap-south-1)
-
+             $lt_json_file = [System.IO.Path]::GetTempFileName()
+             $lt_data | ConvertTo-Json | Set-Content -Path $lt_json_file -Force
+             $launch_template = (aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data file://$lt_json_file --region ap-south-1)
+             Write-Host "Launch Template JSON: $lt_json_file"
               
          # - name: Create the JSON file for Launch Template specifications
          #   id: create-json
