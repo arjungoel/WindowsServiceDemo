@@ -122,5 +122,3 @@ jobs:
                   }
               )
            }
-
-           aws ec2 create-launch-template --launch-template-name TemplateForPoc --version-description WebVersion1 --launch-template-data (ConvertTo-Json $launchTemplateData)
