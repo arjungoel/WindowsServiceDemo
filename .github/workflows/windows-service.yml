@@ -119,19 +119,9 @@ jobs:
               } | ConvertTo-Json
 
               $launch_template = (aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data $launch_template_data --region ap-south-1)
+              Write-Host "Launch Template: $launch_template"    
 
-# Print the launch template information if needed
-Write-Host "Launch Template: $launch_template"
-In this code, we use the ConvertTo-Json cmdlet to properly format the $launch_template_data as a JSON string with double quotes around property names and string values. This should resolve the JSON parsing error you were encountering. Make sure to replace *** with the appropriate region and other values in your script.
-
-
-
-
-
-
-
-
-             
+              
          # - name: Create the JSON file for Launch Template specifications
          #   id: create-json
          #   uses: jsdaniell/create-json@v1.2.2
