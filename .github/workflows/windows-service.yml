@@ -73,7 +73,7 @@ jobs:
                echo "Service exist"
                Stop-Service -Name ${{ env.SERVICE_NAME }}
 
-               Remove-Service -Name ${{ env.SERVICE_NAME }}
+               SC Delete ${{ env.SERVICE_NAME }}
                
                Start-Sleep -Seconds 10
                
