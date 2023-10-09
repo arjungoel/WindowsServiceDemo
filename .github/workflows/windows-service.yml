@@ -133,7 +133,7 @@ jobs:
               )
              }
              $lt_json = $lt_data | ConvertTo-Json
-             aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data $lt_json --region ap-south-1
+             $launch_template=(aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data $lt_json --region ap-south-1)
 
               
          # - name: Create the JSON file for Launch Template specifications
