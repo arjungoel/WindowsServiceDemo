@@ -92,62 +92,16 @@ jobs:
              Start-Service -Name ${{ env.SERVICE_NAME }}
   
          - name: Create the AMI for the EC2 instance
+           id: create-ami
            shell: powershell
            run: |
              $instance_id = Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/instance-id
              $ami_name = "poc-ami-$(Get-Date -Format 'yyyyMMddHHmmss')"
              $ami_id = (aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId
+             echo "::set-output name=ami_id::$ami_id"
 
-             $json_content = @{
-               "NetworkInterfaces" = @(
-                 @{
-                   "DeviceIndex" = 0
-                   "AssociatePublicIpAddress" = $true
-                   "Groups" = @("sg-089b265ba5151931e")
-                   "DeleteOnTermination" = $true
-                 }
-               )
-               "ImageId" = $ami_id
-               "InstanceType" = "t2.micro"
-               "TagSpecifications" = @(
-                 @{
-                   "ResourceType" = "instance"
-                   "Tags" = @(
-                     @{
-                       "Key" = "environment"
-                       "Value" = "development"
-                     },
-                     @{
-                       "Key" = "Name"
-                       "Value" = "poc-lt"
-                     }
-                   )
-                 },
-                 @{
-                   "ResourceType" = "volume"
-                   "Tags" = @(
-                     @{
-                       "Key" = "environment"
-                       "Value" = "development"
-                     },
-                     @{
-                       "Key" = "Name"
-                       "Value" = "poc-lt"
-                     }
-                   )
-                 }
-               )
-               "BlockDeviceMappings" = @(
-                 @{
-                   "DeviceName" = "/dev/sda1"
-                   "Ebs" = @{
-                     "VolumeSize" = 100
-                   }
-                 }
-               )
-             }
-
-             $json_content | ConvertTo-Json | Out-File -FilePath "launch-template.json"
-             $launch_template_data = Get-Content -Raw "launch-template.json" | Out-String
-             aws ec2 create-launch-template --launch-template-name "my-launch-template" --version-description "Initial version" --launch-template-data $launch_template_data
-        
+         - name: Execute PowerShell script
+           shell: powershell
+           run: |
+             $ami_id = $env:AMI_ID
+             echo $ami_id
