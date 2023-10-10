@@ -150,8 +150,10 @@ jobs:
          - name: Create EC2 Launch Template
            shell: powershell
            run: |
-             $launch_template=(aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data file://launch-template.json --region ap-south-1)
-
+             ni launch_template.txt -type file
+             C:\"Program Files"\Amazon\AWSCLIV2\aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data file://launch-template.json --region ap-south-1 --query 'LaunchTemplateId' --output text > launch_template.txt
+             cat launch_template.txt
+            
          - name: Delete the ami.txt file
            shell: powershell
            run: Remove-Item "C:\actions-runner\_work\WindowsServiceDemo\WindowsServiceDemo\ami.txt"
