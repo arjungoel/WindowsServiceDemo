@@ -100,6 +100,8 @@ jobs:
              $ami_id = (aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId
              echo "AMI_ID=$ami_id" >> $GITHUB_ENV
              echo "AMI ID is $ami_id"
+             $ami_id = $env:AMI_ID
+
              
          - name: Create the JSON file for Launch Template specifications
            id: create-json
