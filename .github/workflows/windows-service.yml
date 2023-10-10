@@ -104,7 +104,9 @@ jobs:
          - name: Print AMI ID
            shell: powershell
            id: ami-id
-           run: cat ami.txt
+           run: |
+             cat ami.txt
+             echo ${{ steps.ami-id.outputs.ami-id }}
            
          - name: Create the JSON file for Launch Template specifications
            id: create-json
