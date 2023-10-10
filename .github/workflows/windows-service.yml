@@ -115,7 +115,7 @@ jobs:
                     "DeleteOnTermination": true
                   }
                 ],
-                "InstanceType": t2.micro,
+                "InstanceType": "t2.micro",
                 "TagSpecifications": [
                   {
                     "ResourceType": "instance",
