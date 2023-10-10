@@ -98,7 +98,7 @@ jobs:
              ni ami.txt -type file
              $instance_id = Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/instance-id
              $ami_name = "poc-ami-$(Get-Date -Format 'yyyyMMddHHmmss')"
-             C:\"Program Files"\Amazon\AWSCLIV2\aws ec2 create-image --instance-id $instance_id --name "ami_name" --no-reboot > ami.txt
+             C:\"Program Files"\Amazon\AWSCLIV2\aws ec2 create-image --instance-id $instance_id --name "$ami_name" "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --query 'ImageId' --output text > ami.txt
              cat ami.txt
              # $ami_id = (aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId > ami.txt
              
@@ -144,7 +144,7 @@ jobs:
                 ]
                }
                
-         - name: Create EC2 Launch Template
-           shell: powershell
-           run: |
-             $launch_template=(aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data file://launch-template.json --region ap-south-1)
+         # - name: Create EC2 Launch Template
+         #   shell: powershell
+         #   run: |
+         #     $launch_template=(aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data file://launch-template.json --region ap-south-1)
