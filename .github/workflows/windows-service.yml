@@ -115,6 +115,7 @@ jobs:
                     "DeleteOnTermination": true
                   }
                 ],
+                "ImageId": "${{ steps.create-ami.outputs.ami-id }}"
                 "InstanceType": "t2.micro",
                 "TagSpecifications": [
                   {
