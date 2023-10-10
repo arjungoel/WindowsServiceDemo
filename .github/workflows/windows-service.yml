@@ -92,20 +92,20 @@ jobs:
          #     Start-Service -Name ${{ env.SERVICE_NAME }}
   
          - name: Create the AMI for the EC2 instance
-           id: create-ami
            shell: powershell
            run: |
              ni ami.txt -type file
              $instance_id = Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/instance-id
              $ami_name = "poc-ami-$(Get-Date -Format 'yyyyMMddHHmmss')"
              C:\"Program Files"\Amazon\AWSCLIV2\aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --query 'ImageId' --output text > ami.txt
-             # cat ami.txt
-             AMI_ID=$(cat ami.txt)
-             echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
              # $ami_id = (aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId > ami.txt
              
              
-             
+         - name: Print AMI ID
+           shell: powershell
+           id: ami-id
+           run: cat ami.txt
+           
          - name: Create the JSON file for Launch Template specifications
            id: create-json
            uses: jsdaniell/create-json@v1.2.2
