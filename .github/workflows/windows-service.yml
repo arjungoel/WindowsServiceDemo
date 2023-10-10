@@ -106,7 +106,7 @@ jobs:
            id: ami-id
            run: |
              cat ami.txt
-             echo "::set-output name=ami-id::$(cat ami_id.txt)"
+             echo "::set-output name=ami-id::$(cat ami.txt)"
            
          - name: Create the JSON file for Launch Template specifications
            id: create-json
