@@ -98,13 +98,54 @@ jobs:
              $ami_name = "poc-ami-$(Get-Date -Format 'yyyyMMddHHmmss')"
              $ami_id = (aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId
 
-            
-             $launch_template_name = "my-launch-template"
-             $launch_template_version_description = "1"
-             $instance_type = "t2.micro"
-             $key_name = "iis-web-server-demo"
-             $security_group_ids = "sg-089b265ba5151931e"
-             $subnet_id = "subnet-0c4b0776a2f30cb61"
-
-             aws ec2 create-launch-template --launch-template-name $launch_template_name --version-description $launch_template_version_description --block-device-mappings "[{\"DeviceName\":\"/dev/xvda\",\"Ebs\":{\"DeleteOnTermination\":true,\"VolumeType\":\"gp2\",\"VolumeSize\":8}}]" --instance-type $instance_type --key-name $key_name --security-group-ids $security_group_ids --subnet-id $subnet_id --block-device-mappings "[{\"DeviceName\":\"/dev/xvda\",\"Ebs\":{\"DeleteOnTermination\":true,\"VolumeType\":\"gp2\",\"VolumeSize\":8}}]" --image-id $ami_id
-            
+             $json_content = @{
+              "NetworkInterfaces" = @(
+                @{
+                  "DeviceIndex" = 0
+                  "AssociatePublicIpAddress" = $true
+                  "Groups" = ["sg-089b265ba5151931e"]
+                  "DeleteOnTermination" = $true
+                }
+              )
+              "ImageId" = $ami_id
+              "InstanceType" = "t2.micro"
+              "TagSpecifications" = @(
+                @{
+                  "ResourceType" = "instance"
+                  "Tags" = @(
+                    @{
+                      "Key" = "environment"
+                      "Value" = "development"
+                    },
+                    @{
+                      "Key" = "Name"
+                      "Value" = "poc-lt"
+                    }
+                  )
+                },
+                @{
+                  "ResourceType" = "volume"
+                  "Tags" = @(
+                    @{
+                      "Key" = "environment"
+                      "Value" = "development"
+                    },
+                    @{
+                      "Key" = "Name"
+                      "Value" = "poc-lt"
+                    }
+                  )
+                }
+              )
+              "BlockDeviceMappings" = @(
+                @{
+                  "DeviceName" = "/dev/sda1"
+                  "Ebs" = @{
+                    "VolumeSize" = 100
+                  }
+                }
+              )
+             }
+        
+             $json_content | ConvertTo-Json | Out-File -FilePath "launch-template.json"
+        
