@@ -106,6 +106,7 @@ jobs:
            id: ami-id
            run: |
              cat ami.txt
+             echo "::set-output name=ami-id::$(cat ami_id.txt)"
            
          - name: Create the JSON file for Launch Template specifications
            id: create-json
@@ -122,7 +123,7 @@ jobs:
                     "DeleteOnTermination": true
                   }
                 ],
-                "ImageId": "${{ steps.ami-id.outputs }}",
+                "ImageId": "${{ steps.ami-id.outputs.ami-id }}",
                 "InstanceType": "t2.micro",
                 "TagSpecifications": [
                   {
