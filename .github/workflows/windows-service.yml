@@ -99,53 +99,53 @@ jobs:
              $ami_id = (aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId
 
              $json_content = @{
-              "NetworkInterfaces" = @(
-                @{
-                  "DeviceIndex" = 0
-                  "AssociatePublicIpAddress" = $true
-                  "Groups" = ["sg-089b265ba5151931e"]
-                  "DeleteOnTermination" = $true
-                }
-              )
-              "ImageId" = $ami_id
-              "InstanceType" = "t2.micro"
-              "TagSpecifications" = @(
-                @{
-                  "ResourceType" = "instance"
-                  "Tags" = @(
-                    @{
-                      "Key" = "environment"
-                      "Value" = "development"
-                    },
-                    @{
-                      "Key" = "Name"
-                      "Value" = "poc-lt"
-                    }
-                  )
-                },
-                @{
-                  "ResourceType" = "volume"
-                  "Tags" = @(
-                    @{
-                      "Key" = "environment"
-                      "Value" = "development"
-                    },
-                    @{
-                      "Key" = "Name"
-                      "Value" = "poc-lt"
-                    }
-                  )
-                }
-              )
-              "BlockDeviceMappings" = @(
-                @{
-                  "DeviceName" = "/dev/sda1"
-                  "Ebs" = @{
-                    "VolumeSize" = 100
-                  }
-                }
-              )
+               "NetworkInterfaces" = @(
+                 @{
+                   "DeviceIndex" = 0
+                   "AssociatePublicIpAddress" = $true
+                   "Groups" = @("sg-089b265ba5151931e")
+                   "DeleteOnTermination" = $true
+                 }
+               )
+               "ImageId" = $ami_id
+               "InstanceType" = "t2.micro"
+               "TagSpecifications" = @(
+                 @{
+                   "ResourceType" = "instance"
+                   "Tags" = @(
+                     @{
+                       "Key" = "environment"
+                       "Value" = "development"
+                     },
+                     @{
+                       "Key" = "Name"
+                       "Value" = "poc-lt"
+                     }
+                   )
+                 },
+                 @{
+                   "ResourceType" = "volume"
+                   "Tags" = @(
+                     @{
+                       "Key" = "environment"
+                       "Value" = "development"
+                     },
+                     @{
+                       "Key" = "Name"
+                       "Value" = "poc-lt"
+                     }
+                   )
+                 }
+               )
+               "BlockDeviceMappings" = @(
+                 @{
+                   "DeviceName" = "/dev/sda1"
+                   "Ebs" = @{
+                     "VolumeSize" = 100
+                   }
+                 }
+               )
              }
-        
+
              $json_content | ConvertTo-Json | Out-File -FilePath "launch-template.json"
         
