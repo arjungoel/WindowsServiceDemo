@@ -148,4 +148,6 @@ jobs:
              }
 
              $json_content | ConvertTo-Json | Out-File -FilePath "launch-template.json"
+             $launch_template_data = Get-Content -Raw "launch-template.json" | Out-String
+             aws ec2 create-launch-template --launch-template-name "my-launch-template" --version-description "Initial version" --launch-template-data $launch_template_data
         
