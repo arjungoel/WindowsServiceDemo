@@ -95,9 +95,11 @@ jobs:
            id: create-ami
            shell: powershell
            run: |
+             ni ami.txt -type file
              $instance_id = Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/instance-id
              $ami_name = "poc-ami-$(Get-Date -Format 'yyyyMMddHHmmss')"
-             $ami_id = (aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId
+             $ami_id = (aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --output text).ImageId >> ami.txt
+             cat ami.txt
              
              
          - name: Create the JSON file for Launch Template specifications
@@ -115,7 +117,6 @@ jobs:
                     "DeleteOnTermination": true
                   }
                 ],
-                "ImageId": "${{ steps.create-ami.outputs.ami-id }}"
                 "InstanceType": "t2.micro",
                 "TagSpecifications": [
                   {
