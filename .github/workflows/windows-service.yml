@@ -106,7 +106,6 @@ jobs:
            id: ami-id
            run: |
              cat ami.txt
-             echo ${{ steps.ami-id.outputs.ami-id }}
            
          - name: Create the JSON file for Launch Template specifications
            id: create-json
@@ -123,7 +122,7 @@ jobs:
                     "DeleteOnTermination": true
                   }
                 ],
-                "ImageId": "$AMI_ID",
+                "ImageId": "${{ steps.ami-id.outputs }}",
                 "InstanceType": "t2.micro",
                 "TagSpecifications": [
                   {
@@ -149,7 +148,7 @@ jobs:
                 ]
                }
                
-         # - name: Create EC2 Launch Template
-         #   shell: powershell
-         #   run: |
-         #     $launch_template=(aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data file://launch-template.json --region ap-south-1)
+         - name: Create EC2 Launch Template
+           shell: powershell
+           run: |
+             $launch_template=(aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data file://launch-template.json --region ap-south-1)
