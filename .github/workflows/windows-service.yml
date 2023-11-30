@@ -112,8 +112,8 @@ jobs:
         
          - name: Download the Windows Service Executable (.exe) file from S3 bucket to EC2 instance location
            shell: powershell
-           run: aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/${{ env.S3_CLIENT_FOLDER }}/WindowsServiceDemo.exe ${{ env.SH_RUNNER_WORK_LOCATION }}
-        
+           run: aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/WindowsServiceDemo.zip ${{ env.SH_RUNNER_WORK_LOCATION }}
+                    
          - name: To check Windows Service existence (exists or not) and kill the process if required
            shell: powershell
            run: |
