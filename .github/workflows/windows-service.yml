@@ -160,6 +160,11 @@ jobs:
            run: |
             Start-Service -Name "${{ env.SERVICE_NAME }}"
         
+         - name: Check the service status
+           shell: powershell
+           run: |
+            sc.exe Query "${{ env.SERVICE_NAME }}"
+        
          - name: Download the release.txt file from S3 bucket to EC2 location and rename the artifacts file in S3 bucket
            shell: powershell
            run: |
@@ -176,3 +181,9 @@ jobs:
            run: |
             aws s3 rm s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/release.txt    
             Remove-Item ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt
+        
+         - name: Add registry key after deployment
+           shell: powershell
+           run: |
+            [string[]] $v = @("COR_ENABLE_PROFILING=1", "COR_PROFILER={846F5F1C-F9AE-4B07-969E-05C26BC060D8}") 
+            Set-ItemProperty HKLM:SYSTEM\CurrentControlSet\Services\${{ env.SERVICE_NAME }} -Name Environment -Value $v
