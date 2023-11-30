@@ -67,7 +67,7 @@ jobs:
                EXECUTABLE_PATH: ${{ secrets.EXECUTABLE_PATH }}
              run: |
               aws s3 cp ${{ env.BUILD_PATH }} s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/
-              aws s3 cp release.txt s3://${{ env.AWS_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/
+              aws s3 cp release.txt s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/
      
        deploy:
         needs: build
@@ -163,9 +163,9 @@ jobs:
          - name: Download the release.txt file from S3 bucket to EC2 location and rename the artifacts file in S3 bucket
            shell: powershell
            run: |
-            aws s3 cp s3://${{ env.AWS_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-demo/release.txt ${{ env.SH_RUNNER_WORK_LOCATION }}
+            aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-demo/release.txt ${{ env.SH_RUNNER_WORK_LOCATION }}
             $output = cat ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt
-            aws s3 mv s3://${{ env.AWS_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-demo/WindowsServiceDemo.zip s3://${{ env.AWS_BUCKET_NAME  }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-demo/WindowsServiceDemo-$output.zip
+            aws s3 mv s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-demo/WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME  }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-demo/WindowsServiceDemo-$output.zip
                   
          - name: Delete the zipped file to allow new builds gracefully
            shell: powershell
@@ -174,5 +174,5 @@ jobs:
          - name: Delete the release.txt file from S3 bucket and Server location 
            shell: powershell
            run: |
-            aws s3 rm s3://${{ env.AWS_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-demo/release.txt    
+            aws s3 rm s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-demo/release.txt    
             Remove-Item ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt
