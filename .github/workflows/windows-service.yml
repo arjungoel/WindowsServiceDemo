@@ -9,16 +9,19 @@ on:
 
 env:
   S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
-  EXECUTABLE_PATH_RUNNER: ${{ secrets.EXECUTABLE_PATH_RUNNER }}
-  SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
-  EC2_LOCATION: ${{ secrets.EC2_LOCATION }}
 
 jobs:
        build:
          runs-on: windows-latest
+         environment: production
          defaults:
            run:
              shell: cmd
+         env:
+          BUILD_PATH: ${{ vars.BUILD_PATH }}
+          S3_CLIENT_FOLDER: ${{ vars.S3_CLIENT_FOLDER }}
+
+
          steps:
            - name: Checkout code repository
              uses: actions/checkout@v3
@@ -33,7 +36,15 @@ jobs:
              run: nuget restore WindowsServiceDemo.sln
 
            - name: Build solution
-             run: msbuild WindowsServiceDemo.sln /p:Configuration=Release /p:DeployOnBuild=true
+             run: msbuild WindowsServiceDemo.sln /p:Configuration=Release /p:DeployOnBuild=true /p:AutoParameterizationWebConfigConnectionStrings=False
+          
+           - name: Determine next version v2
+             run: .\tag_release_main.ps1
+             shell: pwsh
+
+           - name: Zip the Build folder
+             shell: powershell
+             run: Compress-Archive -Path "${{ env.BUILD_PATH }}" -DestinationPath "${{ env.BUILD_PATH }}\WindowsServiceDemo.zip"
       
            - name: Set AWS credentials
              uses: aws-actions/configure-aws-credentials@v1
@@ -47,15 +58,22 @@ jobs:
              env:
                EXECUTABLE_PATH: ${{ secrets.EXECUTABLE_PATH }}
              run: |
-               aws s3 cp ${{ env.EXECUTABLE_PATH }} s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/
+              aws s3 cp ${{ env.BUILD_PATH }} s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/
+              aws s3 cp release.txt s3://${{ env.AWS_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/
      
        deploy:
         needs: build
-        runs-on: [ self-hosted, Windows, X64 ]
+        runs-on: [ self-hosted, Windows, X64, windows-service-demo ]
+        environment: production
         timeout-minutes: 10
         defaults:
           run:
            shell: cmd
+        env:
+          SERVICE_NAME: ${{ vars.SERVICE_NAME }}
+          S3_CLIENT_FOLDER: ${{ vars.S3_CLIENT_FOLDER }}
+          SH_RUNNER_WORK_LOCATION: ${{ vars.SH_RUNNER_WORK_LOCATION }}
+
         steps:
          - name: Set AWS credentials
            uses: aws-actions/configure-aws-credentials@v1
@@ -63,96 +81,90 @@ jobs:
              aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
              aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
              aws-region: ${{ secrets.AWS_REGION }}
-             
-         - name: To check Windows Service existence (exists or not)
+         
+         - name: Delete the zipped folder and unzipped folder if not deleted gracefully from the previous build run
            shell: powershell
            run: |
-             $service = Get-Service -Name ${{ env.SERVICE_NAME }} -ErrorAction SilentlyContinue
-             if ($service -ne $null -and $service.Status -eq "Running") {
-               echo "Service exist"
-               Stop-Service -Name ${{ env.SERVICE_NAME }}
-               
-               Start-Sleep -Seconds 10
-               
-               cd C:\Windows\System32
-               C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe -u ${{ env.EXECUTABLE_PATH_RUNNER }}            
-             }
-      
+            $folderPath = "${{ env.SH_RUNNER_WORK_LOCATION }}\windows-service-demo"
+            $testPath = Test-Path -Path $folderPath -PathType Container
+            $zipFilePath = "${{ env.SH_RUNNER_WORK_LOCATION }}\WindowsServiceDemo.zip"
+            $zipFileTestPath = Test-Path -Path $zipFilePath -PathType Leaf
+
+            if ($testPath -eq $true) {
+              takeown /F "$folderPath" /r /d y
+              icacls "$folderPath" /grant Administrators:F /t
+              Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue
+            } elseif ($zipFileTestPath -eq $true) {
+              Write-Output "File '$zipFilePath' exists. Removing..."
+              Remove-Item -Path $zipFilePath -Force
+              Write-Output "File removed successfully."
+            } else {
+              Write-Output "Neither unzipped folder nor zipped file found."
+            }
+        
          - name: Download the Windows Service Executable (.exe) file from S3 bucket to EC2 instance location
            shell: powershell
-           env:
-             EC2_LOCATION: ${{ secrets.EC2_LOCATION }}
-           run: C:\"Program Files"\Amazon\AWSCLIV2\aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/WindowsServiceDemo.exe ${{ env.EC2_LOCATION }}
+           run: aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/windows-service-app/${{ env.S3_CLIENT_FOLDER }}/WindowsServiceDemo.exe ${{ env.SH_RUNNER_WORK_LOCATION }}
         
+         - name: To check Windows Service existence (exists or not) and kill the process if required
+           shell: powershell
+           run: |
+            $serviceName = "${{ env.SERVICE_NAME }}"
+
+            $service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
+
+            if ($service -ne $null) {
+              Write-Host "Service '$serviceName' exists"
+             
+              # Killing the process will automatically stop the service
+              cmd.exe /C "taskkill /f /im WindowsServiceDemo.exe"
+              Start-Sleep -Seconds 5
+             
+              # Delete the service
+              sc.exe DELETE $serviceName
+            } else {
+                Write-Host "Service '$serviceName' not found."
+            }
+
+         - name: Delete the unzipped folder (if exists)
+           shell: powershell
+           run: |
+            $folderPath = "${{ env.SH_RUNNER_WORK_LOCATION }}\windows-service-demo"
+            $testPath = Test-Path -Path $folderPath -PathType Container
+            if ($testPath -eq $true) {
+              takeown /F "$folderPath" /r /d y
+              icacls "$folderPath" /grant Administrators:F /t
+             
+              Remove-Item -Path $folderPath -Recurse -Force -ErrorAction SilentlyContinue
+            }
+
+         - name: Unzipping the Zip file
+           shell: powershell
+           run: Expand-Archive -Path "${{ env.SH_RUNNER_WORK_LOCATION }}\WindowsServiceDemo.zip" -DestinationPath "${{ env.SH_RUNNER_WORK_LOCATION }}\windows-service-demo" -Force
+  
          - name: Install the windows service
            shell: powershell
            run: |
-             cd C:\Windows\System32
-             C:\Windows\Microsoft.NET\Framework\v4.0.30319\InstallUtil.exe ${{ env.EXECUTABLE_PATH_RUNNER }}
-             Start-Service -Name ${{ env.SERVICE_NAME }}
-  
-         - name: Create the AMI for the EC2 instance
+            sc.exe create "${{ env.SERVICE_NAME }}" binPath= "${{ env.SH_RUNNER_WORK_LOCATION }}\windows-service-demo\Release\WindowsServiceDemo.exe"
+
+         - name: Start the service
            shell: powershell
            run: |
-             ni ami.txt -type file
-             $instance_id = Invoke-RestMethod -Uri http://169.254.169.254/latest/meta-data/instance-id
-             $ami_name = "poc-ami-$(Get-Date -Format 'yyyyMMddHHmmss')"
-             C:\"Program Files"\Amazon\AWSCLIV2\aws ec2 create-image --instance-id $instance_id --name "$ami_name" --tag-specifications "ResourceType=image,Tags=[{Key=Name,Value=$ami_name}]" --no-reboot --query 'ImageId' --output text > ami.txt
-             
-         - name: Print the AMI ID
-           shell: powershell
-           id: ami-id
-           run: |
-             cat ami.txt
-             echo "::set-output name=ami-id::$(cat ami.txt)"
-           
-         - name: Create the JSON file for Launch Template specifications
-           id: create-json
-           uses: jsdaniell/create-json@v1.2.2
-           with:
-             name: "launch-template.json"
-             json: |
-               {
-                "NetworkInterfaces": [
-                  {
-                    "DeviceIndex": 0,
-                    "AssociatePublicIpAddress": true,
-                    "Groups": ["sg-089b265ba5151931e"],
-                    "DeleteOnTermination": true
-                  }
-                ],
-                "ImageId": "${{ steps.ami-id.outputs.ami-id }}",
-                "InstanceType": "t2.micro",
-                "TagSpecifications": [
-                  {
-                    "ResourceType": "instance",
-                    "Tags": [
-                      {"Key": "environment", "Value": "development"},
-                      {"Key": "Name", "Value": "poc-lt"}
-                    ]
-                  },
-                  {
-                    "ResourceType": "volume",
-                    "Tags": [
-                      {"Key": "environment", "Value": "development"},
-                      {"Key": "Name", "Value": "poc-lt"}
-                    ]
-                  }
-                ],
-                "BlockDeviceMappings": [
-                  {
-                    "DeviceName": "/dev/sda1",
-                    "Ebs": {"VolumeSize": 100}
-                  }
-                ]
-               }
-               
-         - name: Create EC2 Launch Template
+            Start-Service -Name "${{ env.SERVICE_NAME }}"
+        
+         - name: Download the release.txt file from S3 bucket to EC2 location and rename the artifacts file in S3 bucket
            shell: powershell
            run: |
-             C:\"Program Files"\Amazon\AWSCLIV2\aws ec2 create-launch-template --launch-template-name TemplateForAutoScaling --version-description AutoScalingVersion1 --launch-template-data file://launch-template.json --region ap-south-1
-            
-         - name: Delete the ami.txt file
+            aws s3 cp s3://${{ env.AWS_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-demo/release.txt ${{ env.SH_RUNNER_WORK_LOCATION }}
+            $output = cat ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt
+            aws s3 mv s3://${{ env.AWS_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-demo/WindowsServiceDemo.zip s3://${{ env.AWS_BUCKET_NAME  }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-demo/WindowsServiceDemo-$output.zip
+                  
+         - name: Delete the zipped file to allow new builds gracefully
            shell: powershell
-           run: Remove-Item "C:\actions-runner\_work\WindowsServiceDemo\WindowsServiceDemo\ami.txt"
-           
+           run: Remove-Item "${{ env.SH_RUNNER_WORK_LOCATION }}\WindowsServiceDemo.zip"
+              
+         - name: Delete the release.txt file from S3 bucket and Server location 
+           shell: powershell
+           run: |
+            aws s3 rm s3://${{ env.AWS_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-demo/release.txt    
+            Remove-Item ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt
