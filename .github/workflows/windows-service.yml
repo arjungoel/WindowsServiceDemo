@@ -9,6 +9,8 @@ on:
 
 env:
   S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+  GIT_CONFIG_EMAIL: ${{ secrets.GIT_CONFIG_EMAIL }}
+  GIT_CONFIG_USERNAME: ${{ secrets.GIT_CONFIG_USERNAME }}
 
 jobs:
        build:
@@ -38,6 +40,12 @@ jobs:
            - name: Build solution
              run: msbuild WindowsServiceDemo.sln /p:Configuration=Release /p:DeployOnBuild=true /p:AutoParameterizationWebConfigConnectionStrings=False
           
+           - name: Git config
+             shell: powershell
+             run: |
+              git config --global user.email "${{ env.GIT_CONFIG_EMAIL }}"
+              git config --global user.name "${{ env.GIT_CONFIG_USERNAME }}"
+
            - name: Determine next version v2
              run: .\tag_release_main.ps1
              shell: pwsh
