@@ -11,6 +11,7 @@ env:
   S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
   GIT_CONFIG_EMAIL: ${{ secrets.GIT_CONFIG_EMAIL }}
   GIT_CONFIG_USERNAME: ${{ secrets.GIT_CONFIG_USERNAME }}
+  DEFAULT_JOB_TIMEOUT: ${{ vars.DEFAULT_JOB_TIMEOUT }}
 
 jobs:
        build:
@@ -73,7 +74,7 @@ jobs:
         needs: build
         runs-on: [ self-hosted, Windows, X64, windows-service-demo ]
         environment: production
-        timeout-minutes: 10
+        timeout-minutes: ${{ fromJSON(vars.DEFAULT_JOB_TIMEOUT) }}
         defaults:
           run:
            shell: cmd
