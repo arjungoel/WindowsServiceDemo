@@ -67,8 +67,8 @@ jobs:
              env:
                EXECUTABLE_PATH: ${{ secrets.EXECUTABLE_PATH }}
              run: |
-              aws s3 cp ${{ env.BUILD_PATH }}\WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/
-              aws s3 cp release.txt s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/
+              aws s3 cp ${{ env.BUILD_PATH }}\WindowsServiceDemoPassive.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/
+              aws s3 cp release-passive.txt s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/
      
        deploy:
         needs: build
@@ -99,7 +99,7 @@ jobs:
            run: |
             $folderPath = "${{ env.SH_RUNNER_WORK_LOCATION }}\windows-service-demo"
             $testPath = Test-Path -Path $folderPath -PathType Container
-            $zipFilePath = "${{ env.SH_RUNNER_WORK_LOCATION }}\WindowsServiceDemo.zip"
+            $zipFilePath = "${{ env.SH_RUNNER_WORK_LOCATION }}\WindowsServiceDemoPassive.zip"
             $zipFileTestPath = Test-Path -Path $zipFilePath -PathType Leaf
 
             if ($testPath -eq $true) {
@@ -116,7 +116,7 @@ jobs:
         
          - name: Download the Windows Service Executable (.exe) file from S3 bucket to EC2 instance location
            shell: powershell
-           run: aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/WindowsServiceDemo.zip ${{ env.SH_RUNNER_WORK_LOCATION }}
+           run: aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/WindowsServiceDemoPassive.zip ${{ env.SH_RUNNER_WORK_LOCATION }}
                     
          - name: To check Windows Service existence (exists or not) and kill the process if required
            shell: powershell
@@ -152,7 +152,7 @@ jobs:
 
          - name: Unzipping the Zip file
            shell: powershell
-           run: Expand-Archive -Path "${{ env.SH_RUNNER_WORK_LOCATION }}\WindowsServiceDemo.zip" -DestinationPath "${{ env.SH_RUNNER_WORK_LOCATION }}\windows-service-demo" -Force
+           run: Expand-Archive -Path "${{ env.SH_RUNNER_WORK_LOCATION }}\WindowsServiceDemoPassive.zip" -DestinationPath "${{ env.SH_RUNNER_WORK_LOCATION }}\windows-service-demo" -Force
   
          - name: Install the windows service
            shell: powershell
@@ -169,19 +169,19 @@ jobs:
            run: |
             sc.exe Query "${{ env.SERVICE_NAME }}"
         
-         - name: Download the release.txt file from S3 bucket to EC2 location and rename the artifacts file in S3 bucket
+         - name: Download the release-passive.txt file from S3 bucket to EC2 location and rename the artifacts file in S3 bucket
            shell: powershell
            run: |
-            aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/release.txt ${{ env.SH_RUNNER_WORK_LOCATION }}
-            $output = cat ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt
-            aws s3 mv s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME  }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/WindowsServiceDemo-$output.zip
+            aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/release-passive.txt ${{ env.SH_RUNNER_WORK_LOCATION }}
+            $output = cat ${{ env.SH_RUNNER_WORK_LOCATION }}\release-passive.txt
+            aws s3 mv s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/WindowsServiceDemoPassive.zip s3://${{ env.S3_BUCKET_NAME  }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/WindowsServiceDemoPassive-$output.zip
                   
          - name: Delete the zipped file to allow new builds gracefully
            shell: powershell
-           run: Remove-Item "${{ env.SH_RUNNER_WORK_LOCATION }}\WindowsServiceDemo.zip"
+           run: Remove-Item "${{ env.SH_RUNNER_WORK_LOCATION }}\WindowsServiceDemoPassive.zip"
               
-         - name: Delete the release.txt file from S3 bucket and Server location 
+         - name: Delete the release-passive.txt file from S3 bucket and Server location 
            shell: powershell
            run: |
-            aws s3 rm s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/release.txt    
-            Remove-Item ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt
+            aws s3 rm s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/release-passive.txt    
+            Remove-Item ${{ env.SH_RUNNER_WORK_LOCATION }}\release-passive.txt
