@@ -72,7 +72,10 @@ jobs:
      
        deploy:
         needs: build
-        runs-on: [ self-hosted, Windows, X64, windows-service-demo, windows-service-demo-passive ]
+        runs-on: [ self-hosted, Windows, X64 ]
+        strategy:
+          matrix:
+            os: [ windows-service-demo, windows-service-demo-passive ]
         environment: production
         timeout-minutes: ${{ fromJSON(vars.DEFAULT_JOB_TIMEOUT) }}
         defaults:
