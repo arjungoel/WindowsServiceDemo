@@ -24,8 +24,7 @@ jobs:
          env:
           BUILD_PATH: ${{ vars.BUILD_PATH }}
           S3_CLIENT_FOLDER: ${{ vars.S3_CLIENT_FOLDER }}
-
-
+        
          steps:
            - name: Checkout code repository
              uses: actions/checkout@v3
@@ -85,6 +84,11 @@ jobs:
           SERVICE_NAME: ${{ vars.SERVICE_NAME }}
           S3_CLIENT_FOLDER: ${{ vars.S3_CLIENT_FOLDER }}
           SH_RUNNER_WORK_LOCATION: ${{ vars.SH_RUNNER_WORK_LOCATION }}
+        
+        strategy:
+          matrix:
+            runner: [1]
+          max-parallel: 1
 
         steps:
          - name: Set AWS credentials
@@ -198,6 +202,11 @@ jobs:
           SERVICE_NAME: ${{ vars.SERVICE_NAME }}
           S3_CLIENT_FOLDER: ${{ vars.S3_CLIENT_FOLDER }}
           SH_RUNNER_WORK_LOCATION: ${{ vars.SH_RUNNER_WORK_LOCATION }}
+        
+        strategy:
+          matrix:
+            runner: [1]
+          max-parallel: 1
 
         steps:
          - name: Set AWS credentials
