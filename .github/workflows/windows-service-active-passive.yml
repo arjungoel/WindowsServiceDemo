@@ -68,10 +68,10 @@ jobs:
              env:
                EXECUTABLE_PATH: ${{ secrets.EXECUTABLE_PATH }}
              run: |
-              aws s3 cp ${{ env.BUILD_PATH }}\WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}
-              aws s3 cp ${{ env.BUILD_PATH }}\WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE2 }}
-              aws s3 cp release.txt s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}
-              aws s3 cp release.txt s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE2 }}
+              aws s3 cp ${{ env.BUILD_PATH }}\WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/
+              aws s3 cp ${{ env.BUILD_PATH }}\WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE2 }}/
+              aws s3 cp release.txt s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/
+              aws s3 cp release.txt s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE2 }}/
      
        active-deploy:
         needs: build
