@@ -4,13 +4,15 @@ on:
   push:
     branches: [ "master" ]
     paths:
-      - '.github/workflows/windows-service-active.yml'
+      - '.github/workflows/windows-service-active-passive.yml'
 
 env:
   S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
   GIT_CONFIG_EMAIL: ${{ secrets.GIT_CONFIG_EMAIL }}
   GIT_CONFIG_USERNAME: ${{ secrets.GIT_CONFIG_USERNAME }}
   DEFAULT_JOB_TIMEOUT: ${{ vars.DEFAULT_JOB_TIMEOUT }}
+  MODE1: ${{ vars.MODE1 }}
+  MODE2: ${{ vars.MODE2 }}
 
 jobs:
        build:
@@ -66,8 +68,10 @@ jobs:
              env:
                EXECUTABLE_PATH: ${{ secrets.EXECUTABLE_PATH }}
              run: |
-              aws s3 cp ${{ env.BUILD_PATH }}\WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/
-              aws s3 cp release.txt s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/
+              aws s3 cp ${{ env.BUILD_PATH }}\WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}
+              aws s3 cp ${{ env.BUILD_PATH }}\WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE2 }}
+              aws s3 cp release.txt s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}
+              aws s3 cp release.txt s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE2 }}
      
        active-deploy:
         needs: build
@@ -112,7 +116,7 @@ jobs:
         
          - name: Download the Windows Service Executable (.exe) file from S3 bucket to EC2 instance location
            shell: powershell
-           run: aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/WindowsServiceDemo.zip ${{ env.SH_RUNNER_WORK_LOCATION }}
+           run: aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/WindowsServiceDemo.zip ${{ env.SH_RUNNER_WORK_LOCATION }}
                     
          - name: To check Windows Service existence (exists or not) and kill the process if required
            shell: powershell
@@ -168,9 +172,9 @@ jobs:
          - name: Download the release.txt file from S3 bucket to EC2 location and rename the artifacts file in S3 bucket
            shell: powershell
            run: |
-            aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/release.txt ${{ env.SH_RUNNER_WORK_LOCATION }}
+            aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/release.txt ${{ env.SH_RUNNER_WORK_LOCATION }}
             $output = cat ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt
-            aws s3 mv s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME  }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/WindowsServiceDemo-$output.zip
+            aws s3 mv s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME  }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/WindowsServiceDemo-$output.zip
                   
          - name: Delete the zipped file to allow new builds gracefully
            shell: powershell
@@ -179,7 +183,7 @@ jobs:
          - name: Delete the release.txt file from S3 bucket and Server location 
            shell: powershell
            run: |
-            aws s3 rm s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/release.txt    
+            aws s3 rm s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/release.txt    
             Remove-Item ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt
 
        passive-deploy:
@@ -225,7 +229,7 @@ jobs:
         
          - name: Download the Windows Service Executable (.exe) file from S3 bucket to EC2 instance location
            shell: powershell
-           run: aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/WindowsServiceDemo.zip ${{ env.SH_RUNNER_WORK_LOCATION }}
+           run: aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE2 }}/WindowsServiceDemo.zip ${{ env.SH_RUNNER_WORK_LOCATION }}
                     
          - name: To check Windows Service existence (exists or not) and kill the process if required
            shell: powershell
@@ -281,9 +285,9 @@ jobs:
          - name: Download the release.txt file from S3 bucket to EC2 location and rename the artifacts file in S3 bucket
            shell: powershell
            run: |
-            aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/release.txt ${{ env.SH_RUNNER_WORK_LOCATION }}
+            aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE2 }}/release.txt ${{ env.SH_RUNNER_WORK_LOCATION }}
             $output = cat ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt
-            aws s3 mv s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME  }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/WindowsServiceDemo-$output.zip
+            aws s3 mv s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE2 }}/WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME  }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE2 }}/WindowsServiceDemo-$output.zip
                   
          - name: Delete the zipped file to allow new builds gracefully
            shell: powershell
@@ -292,5 +296,5 @@ jobs:
          - name: Delete the release.txt file from S3 bucket and Server location 
            shell: powershell
            run: |
-            aws s3 rm s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/release.txt    
+            aws s3 rm s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE2 }}/release.txt    
             Remove-Item ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt
