@@ -1,13 +1,15 @@
 name: Deploying a CI/CD for Windows Service using GitHub Actions and upload the executable file in Amazon S3 in Passive Mode
 
 on:
-  workflow_run:
-    workflows: ["Deploying a CI/CD for Windows Service using GitHub Actions and upload the executable file in Amazon S3 in Active Mode"]
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ["Deploying a CI/CD for Windows Service using GitHub Actions and upload the executable file in Amazon S3 in Active Mode"]
+  #   types:
+  #     - completed
   # workflow_dispatch:
   push:
     branches: [ "master" ]
+    paths:
+      - '.github/workflows/windows-service-passive.yml'
   # pull_request:
   #   branches: [ "master" ]
 
