@@ -128,7 +128,8 @@ jobs:
            run: |
             aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/release.txt ${{ env.SH_RUNNER_WORK_LOCATION }}
             echo "TAG_VERSION=${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt" >> "$GITHUB_OUTPUT"
-        
+            echo $GITHUB_OUTPUT
+            
          - name: Get tag version
            env:
             TAG_VERSION: ${{ steps.tag-version.outputs.TAG_VERSION }}
