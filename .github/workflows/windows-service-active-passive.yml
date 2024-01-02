@@ -185,7 +185,7 @@ jobs:
            shell: powershell
            run: |
             [string[]] $v = @("COR_ENABLE_PROFILING=1", "COR_PROFILER={846F5F1C-F9AE-4B07-969E-05C26BC060D8}")
-            Set-ItemProperty HKLM:SYSTEM\CurrentControlSet\Services\${{ env.SERVICE_NAME }} -Name ${{ env.DD_ENV }} -Value $v
+            Set-ItemProperty HKLM:SYSTEM\CurrentControlSet\Services\${{ env.SERVICE_NAME }} -Name Environment -Value $v
 
          - name: Start the service
            shell: powershell
