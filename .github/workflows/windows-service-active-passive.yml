@@ -126,16 +126,12 @@ jobs:
            shell: powershell
            run: |
             aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/release.txt ${{ env.SH_RUNNER_WORK_LOCATION }}
-           env:
-            TAG_VERSION: "cat ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt"
+            $tagVersion = Get-Content -Path ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt
+            echo "GITHUB_TAG_VERSION=$tagVersion" >> $env:GITHUB_ENV
 
          - name: Print Tag version
            shell: powershell
-           run: Write-Host ${{ env.TAG_VERSION }}
-        #  - name: Get tag version
-        #    env:
-        #     TAG_VERSION: ${{ steps.tag-version.outputs.TAG_VERSION }}
-        #    run: echo "The tag version is ${{ env.TAG_VERSION }}"
+           run: echo ${{ env.GITHUB_TAG_VERSION }}
 
          - name: To check Windows Service existence (exists or not) and kill the process if required
            shell: powershell
