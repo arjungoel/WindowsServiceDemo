@@ -129,6 +129,9 @@ jobs:
            env:
             TAG_VERSION: "cat ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt"
 
+         - name: Print Tag version
+           shell: powershell
+           run: Write-Host ${{ env.TAG_VERSION }}
         #  - name: Get tag version
         #    env:
         #     TAG_VERSION: ${{ steps.tag-version.outputs.TAG_VERSION }}
