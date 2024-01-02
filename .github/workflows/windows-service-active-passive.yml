@@ -132,7 +132,7 @@ jobs:
          - name: Get tag version
            env:
             TAG_VERSION: ${{ steps.tag-version.outputs.TAG_VERSION }}
-           run: echo "The selected color is $TAG_VERSION"
+           run: echo "The tag version is ${{ env.TAG_VERSION }}"
 
          - name: To check Windows Service existence (exists or not) and kill the process if required
            shell: powershell
