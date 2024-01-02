@@ -48,7 +48,7 @@ jobs:
               git config --global user.name "${{ env.GIT_CONFIG_USERNAME }}"
 
            - name: Determine next version v2
-             run: .\tag_release.ps1
+             run: .\tag_release_main.ps1
              shell: pwsh
 
            - name: Zip the Build folder
