@@ -85,10 +85,10 @@ jobs:
           S3_CLIENT_FOLDER: ${{ vars.S3_CLIENT_FOLDER }}
           SH_RUNNER_WORK_LOCATION: ${{ vars.SH_RUNNER_WORK_LOCATION }}
         
-        strategy:
-          matrix:
-            runner: [1]
-          max-parallel: 1
+        # strategy:
+        #   matrix:
+        #     runner: [1]
+        #   max-parallel: 1
 
         steps:
          - name: Set AWS credentials
@@ -121,19 +121,31 @@ jobs:
          - name: Download the Windows Service Executable (.exe) file from S3 bucket to EC2 instance location
            shell: powershell
            run: aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/WindowsServiceDemo.zip ${{ env.SH_RUNNER_WORK_LOCATION }}
-                    
+
+         - name: Download the release.txt file from S3 bucket to EC2 instance location
+           shell: powershell
+           id: tag-version
+           run: |
+            aws s3 cp release.txt s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/ ${{ env.SH_RUNNER_WORK_LOCATION }}
+            echo "TAG_VERSION=${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt" >> "$GITHUB_OUTPUT"
+        
+         - name: Get tag version
+           env:
+            TAG_VERSION: ${{ steps.tag-version.outputs.TAG_VERSION }}
+           run: echo "The selected color is $TAG_VERSION"
+
          - name: To check Windows Service existence (exists or not) and kill the process if required
            shell: powershell
            run: |
             $serviceName = "${{ env.SERVICE_NAME }}"
 
             $service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
-
+            $process = Get-WmiObject Win32_Service | Where-Object { $_.Name -eq $serviceName } | ForEach-Object { Get-Process -Id $_.ProcessId }
             if ($service -ne $null) {
               Write-Host "Service '$serviceName' exists"
              
-              # Killing the process will automatically stop the service
-              cmd.exe /C "taskkill /f /im WindowsServiceDemo.exe"
+              # Killing the process id will automatically stop the service
+              cmd.exe /C "taskkill /f /pid $($process.Id)"
               Start-Sleep -Seconds 5
              
               # Delete the service
