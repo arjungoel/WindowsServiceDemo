@@ -43,7 +43,7 @@ $finalTagVersionName = "v" + $finalTagVersion + "-master"
 Write-Host "finalTagVersionName: $finalTagVersionName"
 
 # Check if the tag already exists in the remote repository
-if (git ls-remote --tags origin | Out-String -contains $finalTagVersionName) {
+if (git ls-remote --tags origin | Out-String -match $finalTagVersionName) {
     Write-Host "Tag $finalTagVersionName already exists in the remote repository. Aborting."
 } else {
     # Continue with tag creation and pushing

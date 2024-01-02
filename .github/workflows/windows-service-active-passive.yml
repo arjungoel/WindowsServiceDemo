@@ -2,7 +2,7 @@ name: Deploying a CI/CD for Windows Service using GitHub Actions and upload the 
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ master ]
     paths:
       - '.github/workflows/windows-service-active-passive.yml'
 
