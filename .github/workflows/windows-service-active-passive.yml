@@ -174,6 +174,19 @@ jobs:
            run: |
             sc.exe create "${{ env.SERVICE_NAME }}" binPath= "${{ env.SH_RUNNER_WORK_LOCATION }}\windows-service-demo\Release\WindowsServiceDemo.exe"
 
+         - name: Add service entry to Windows Registry Editor
+           env:
+             # COR_ENABLE_PROFILING: 1
+             # COR_PROFILER: "{846F5F1C-F9AE-4B07-969E-05C26BC060D8}"
+             DD_PROFILING_ENABLED: 1
+             DD_SERVICE: ${{ env.SERVICE_NAME }} 
+             DD_ENV: production
+             DD_VERSION: ${{ env.GITHUB_TAG_VERSION }}
+           shell: powershell
+           run: |
+             [string[]] $v = @("COR_ENABLE_PROFILING=1", "COR_PROFILER={846F5F1C-F9AE-4B07-969E-05C26BC060D8}")
+             Set-ItemProperty HKLM:SYSTEM\CurrentControlSet\Services\${{ env.SERVICE_NAME }} -Name ${{ env.DD_ENV }} -Value $v
+
          - name: Start the service
            shell: powershell
            run: |
@@ -187,7 +200,6 @@ jobs:
          - name: Download the release.txt file from S3 bucket to EC2 location and rename the artifacts file in S3 bucket
            shell: powershell
            run: |
-            aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/release.txt ${{ env.SH_RUNNER_WORK_LOCATION }}
             $output = cat ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt
             aws s3 mv s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/WindowsServiceDemo.zip s3://${{ env.S3_BUCKET_NAME  }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/WindowsServiceDemo-$output.zip
                   
