@@ -124,16 +124,15 @@ jobs:
 
          - name: Download the release.txt file from S3 bucket to EC2 instance location
            shell: powershell
-           id: tag-version
            run: |
             aws s3 cp s3://${{ env.S3_BUCKET_NAME }}/${{ env.S3_CLIENT_FOLDER }}/windows-service-app/${{ env.MODE1 }}/release.txt ${{ env.SH_RUNNER_WORK_LOCATION }}
-            echo "TAG_VERSION=${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt" >> "$GITHUB_OUTPUT"
-            echo $GITHUB_OUTPUT
-            
-         - name: Get tag version
            env:
-            TAG_VERSION: ${{ steps.tag-version.outputs.TAG_VERSION }}
-           run: echo "The tag version is ${{ env.TAG_VERSION }}"
+            TAG_VERSION: "cat ${{ env.SH_RUNNER_WORK_LOCATION }}\release.txt"
+
+        #  - name: Get tag version
+        #    env:
+        #     TAG_VERSION: ${{ steps.tag-version.outputs.TAG_VERSION }}
+        #    run: echo "The tag version is ${{ env.TAG_VERSION }}"
 
          - name: To check Windows Service existence (exists or not) and kill the process if required
            shell: powershell
