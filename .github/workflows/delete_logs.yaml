@@ -11,7 +11,7 @@ on:
 
 jobs:
   delete-logs:
-    runs-on: [self-hosted, Windows, X64, "windows-service-demo-active", "windows-service-demo-passive"]
+    runs-on: [self-hosted, Windows, X64, "windows-service-demo-active"]
     environment: production
     defaults:
       run:
