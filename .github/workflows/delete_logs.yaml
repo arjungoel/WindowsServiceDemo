@@ -1,0 +1,35 @@
+name: Delete logs for Windows service older than 2 hours on scheduled basis
+
+on:
+  schedule:
+    - cron: '0 */5 * * *'
+  #  - cron: '0 0 * * *'
+  #  - cron: '0 */5 * * *'
+  
+
+jobs:
+  delete-logs:
+    strategy:
+      fail-fast: False
+      matrix:
+        include:
+          - key: Active
+            value: windows-service-demo-active
+          - key: Passive
+            value: windows-service-demo-passive
+    runs-on: [self-hosted, Windows, X64, "${{ matrix.key }}", "${{ matrix.value }}"]
+    environment: production
+    defaults:
+      run:
+        shell: cmd
+    env:
+     LOG_PATH: ${{ vars.LOG_PATH }}
+  
+    steps:
+      - name: Delete service logs older than two hours
+        shell: powershell
+        run: |
+          $logsPath = "${{ env.LOG_PATH }}\"
+          $cutoffDate = (Get-Date).AddHours(-2)
+          Get-ChildItem -Path $logsPath -Recurse | Where-Object { $_.LastWriteTime -lt $cutoffDate } | ForEach-Object { Write-Host "Deleting log: $_"; Remove-Item -Path $_.FullName -Force -Recurse } 
+          echo "Logs are deleted successfully"
