@@ -1,4 +1,4 @@
-name: Delete logs for Windows service older than 2 hours on scheduled basis
+name: Delete logs for Windows service older than 20 minutes on scheduled basis
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
 
 jobs:
   delete-logs:
-    runs-on: [self-hosted, Windows, X64, "windows-service-demo-active"]
+    runs-on: [self-hosted, Windows, X64, "windows-service-demo-passive"]
     environment: production
     defaults:
       run:
@@ -24,6 +24,6 @@ jobs:
         shell: powershell
         run: |
           $logsPath = "${{ env.LOG_PATH }}\"
-          $cutoffDate = (Get-Date).AddHours(-2)
+          $cutoffDate = (Get-Date).AddMinutes(-20)
           Get-ChildItem -Path $logsPath -Recurse | Where-Object { $_.LastWriteTime -lt $cutoffDate } | ForEach-Object { Write-Host "Deleting log: $_"; Remove-Item -Path $_.FullName -Force -Recurse } 
           echo "Logs are deleted successfully"
