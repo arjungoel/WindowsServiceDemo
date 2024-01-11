@@ -11,7 +11,11 @@ on:
 
 jobs:
   delete-logs:
-    runs-on: [self-hosted, Windows, X64, "windows-service-demo-passive"]
+    strategy:
+      fail-fast: false
+      matrix:
+        labels: [windows-service-demo-active, windows-service-demo-passive]
+    runs-on: [self-hosted, Windows, X64, ${{ matrix.labels }}]
     environment: production
     defaults:
       run:
