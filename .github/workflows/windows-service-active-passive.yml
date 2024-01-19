@@ -33,7 +33,6 @@ jobs:
              uses: zyactions/dotnet-lint@v1
              with:
                implicit-restore: true
-               dotnet-version: 4.7.x 
 
            - name: Setup MSBuild
              uses: microsoft/setup-msbuild@v1
