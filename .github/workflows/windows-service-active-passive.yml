@@ -28,6 +28,11 @@ jobs:
          steps:
            - name: Checkout code repository
              uses: actions/checkout@v3
+          
+           - name: Check code lint and evaluate
+             uses: zyactions/dotnet-lint@v1
+             with:
+               implicit-restore: true
 
            - name: Setup MSBuild
              uses: microsoft/setup-msbuild@v1
